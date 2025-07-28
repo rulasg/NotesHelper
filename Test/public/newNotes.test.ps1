@@ -143,11 +143,16 @@ function Test_NewNotesToday_Failing{
     MockCallToString 'echo $NOTES_ROOT' -OutString "./TestNotesRoot"
 
     New-TestingFolder -Path "./TestNotesRoot/howto"
+    $today = (Get-Date).ToString("yyMMdd")
 
     # Act
     $result = note howto "someting that may be useful" -NoOpen
 
-    $expectedPath = './TestNotesRoot/howto/250720-howto-someting_that_may_be_useful/250720-howto-someting_that_may_be_useful.md'
+    $expectedPath = "./TestNotesRoot/howto/$today-howto-someting_that_may_be_useful/$today-howto-someting_that_may_be_useful.md"
 
     Assert-AreEqualPath -Expected $expectedPath -Presented $result
 }
+
+# ./TestNotesRoot/howto/250720-howto-someting_that_may_be_useful/250720-howto-someting_that_may_be_useful.md ] 
+# ./TestNotesRoot/howto/250728-howto-someting_that_may_be_useful/250728-howto-someting_that_may_be_useful.md ]
+# [ /tmp/Posh_Testing_250728_87d8dc/TestRunFolder/Test_NewNotesToday_Failing
