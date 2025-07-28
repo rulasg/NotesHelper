@@ -30,7 +30,19 @@ function Get-Notes () {
     # Filter out files that are older than 30 days
     $ret = $All ? $notes : ($notes | Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-30) })
 
-    return $ret.FullName
+    # Create a custom object with required properties
+    $ret = $ret | ForEach-Object {
+        [PSCustomObject]@{
+            Name = $_ | Split-Path -Leaf
+            Category = $_ | Get-NotesCategory
+            FullName = $_.FullName
+        }
+    }
+
+    # Sort by Parent name
+    $ret = $ret | Sort-Object -Property Category
+
+    return $ret
 
 } Export-ModuleMember -Function Get-Notes -Alias "notes"
 
@@ -44,8 +56,22 @@ function GetNotes () {
 
     $notesPath = Resolve-NotesPath
 
-    $notes = Get-ChildItem -Path $notesPath -filter $filter -Recurse
+    $notes = Get-ChildItem -Path $notesPath -filter $filter -Recurse -File
 
     return $notes
 
 }
+
+function Get-NotesCategory {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory,ValueFromPipeline)][object]$Path
+    )
+
+    process{
+        (($Path | Split-Path -Leaf) -split '-|\.')[1]
+    }
+
+   
+
+} Export-ModuleMember -Function Get-NotesCategory
