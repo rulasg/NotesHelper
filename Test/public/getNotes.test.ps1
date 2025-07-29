@@ -2,7 +2,7 @@ function Test_GetNotes_Category{
 
     Reset-InvokeCommandMock
     New-TestingFolder "TestNotesRoot"
-    MockCallToString 'echo $NOTES_ROOT' -OutString "./TestNotesRoot"
+    MockCallToString 'Invoke-NotesHelperNotesRoot' -OutString "./TestNotesRoot"
 
              New-TestingFile "TestNotesRoot/Folder1" "name11-name12-name13.md"
     $file1 = New-TestingFile "TestNotesRoot/Folder1" "name21-name22-name23.md" -PassThru
@@ -30,7 +30,7 @@ function Test_GetNotes_Category_WithDots{
 
     Reset-InvokeCommandMock
     New-TestingFolder "TestNotesRoot"
-    MockCallToString 'echo $NOTES_ROOT' -OutString "./TestNotesRoot"
+    MockCallToString 'Invoke-NotesHelperNotesRoot' -OutString "./TestNotesRoot"
 
              New-TestingFile "TestNotesRoot/Folder1" "name01-name02-name03.md"
     $file1 = New-TestingFile "TestNotesRoot/Folder1" "name11-name12-name13.md" -PassThru

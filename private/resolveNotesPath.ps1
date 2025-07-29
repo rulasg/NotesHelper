@@ -1,5 +1,5 @@
 
-Set-MyInvokeCommandAlias -Alias GetNotesRoot 'echo $NOTES_ROOT'
+Set-MyInvokeCommandAlias -Alias GetNotesRoot 'Invoke-NotesHelperNotesRoot'
 
 function Resolve-NotesPath {
     [CmdletBinding()]
@@ -68,3 +68,11 @@ function New-FolderIfNotExists{
 
     return $Path
 }
+
+function Invoke-NotesHelperNotesRoot{
+    [CmdletBinding()]
+    param()
+
+    $config = Get-NotesHelperConfig
+    return $config.NotesRoot
+} Export-ModuleMember -Function Invoke-NotesHelperNotesRoot
