@@ -3,7 +3,7 @@ function Test_AddNotesToday_Simple{
     Reset-InvokeCommandMock
 
     New-TestingFolder "TestNotesRoot"
-    MockCallToString 'echo $NOTES_ROOT' -OutString "./TestNotesRoot"
+    MockCallToString 'Invoke-NotesHelperNotesRoot' -OutString "./TestNotesRoot"
 
     $category = "TestClient"
     $title = "This is the title of the note"
@@ -39,7 +39,7 @@ function Test_AddNotesToday_Simple_AvoidChildFolder {
     Reset-InvokeCommandMock
 
     New-TestingFolder "TestNotesRoot"
-    MockCallToString 'echo $NOTES_ROOT' -OutString "./TestNotesRoot"
+    MockCallToString 'Invoke-NotesHelperNotesRoot' -OutString "./TestNotesRoot"
 
     $category = "TestClient"
     $title = "This is the title of the note"
@@ -70,7 +70,7 @@ function Test_AddNotesToday_WithContent {
     Reset-InvokeCommandMock
 
     New-TestingFolder "TestNotesRoot"
-    MockCallToString 'echo $NOTES_ROOT' -OutString "./TestNotesRoot"
+    MockCallToString 'Invoke-NotesHelperNotesRoot' -OutString "./TestNotesRoot"
 
     $category = "TestClient"
     $title = "This is the title of the client note"
@@ -104,7 +104,7 @@ function Test_AddNotesToday_Client_Simple{
     Reset-InvokeCommandMock
 
     New-TestingFolder "TestNotesRoot"
-    MockCallToString 'echo $NOTES_ROOT' -OutString "./TestNotesRoot"
+    MockCallToString 'Invoke-NotesHelperNotesRoot' -OutString "./TestNotesRoot"
 
     $category = "Clients"
     $title = "This is the title of the note"
@@ -140,7 +140,7 @@ function Test_NewNotesToday_Failing{
     Reset-InvokeCommandMock
 
     New-TestingFolder "TestNotesRoot"
-    MockCallToString 'echo $NOTES_ROOT' -OutString "./TestNotesRoot"
+    MockCallToString 'Invoke-NotesHelperNotesRoot' -OutString "./TestNotesRoot"
 
     New-TestingFolder -Path "./TestNotesRoot/howto"
     $today = (Get-Date).ToString("yyMMdd")
