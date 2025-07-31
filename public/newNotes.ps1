@@ -133,6 +133,45 @@ function New-NoteTodayClient{
 
 } Export-ModuleMember -Function New-NoteTodayClient -Alias cnote
 
+function New-NoteTodayMeeting{
+    [CmdletBinding()]
+    [alias("mnote")]
+    param(
+        [Parameter(Mandatory,Position = 0)][string] $Name,
+        [Parameter(Mandatory,Position = 1)][string] $Title,
+        [Parameter(Position = 2)][string] $Notes,
+        [Parameter(ValueFromPipeline)][string] $IssueUrl,
+        [Parameter()][switch] $NoOpen,
+        [Parameter()][switch] $Force
+    )
+
+    begin {
+        $category = "meetings"
+        $section = $Name
+    }
+
+    process{
+
+        $folder = Get-NoteFolder -Category $category -Section $section -Force:$Force
+
+        if (-not $folder) {
+            Write-Error "Client folder for '$section' does not exist and Force was not specified."
+            return
+        }
+
+        New-NoteToday `
+            -Category $category `
+            -Section $section `
+            -Title $Title `
+            -Notes $Notes `
+            -IssueUrl $IssueUrl `
+            -Template "meetingmini" `
+            -NoOpen:$NoOpen `
+            -AvoidChildFolder # Add all the notes in the same client folder
+    }
+
+} Export-ModuleMember -Function New-NoteTodayMeeting -Alias mnote
+
 function NewNoteToday{
     # Add Force parameter to support creation of client folder if it doesn't exist
     [CmdletBinding()]
