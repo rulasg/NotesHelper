@@ -107,13 +107,14 @@ function Test_AddNotesToday_Client_Simple{
     MockCallToString 'Invoke-NotesHelperNotesRoot' -OutString "./TestNotesRoot"
 
     $category = "Clients"
+    $clientName = "TestClientName"
     $title = "This is the title of the note"
     $date = (Get-Date).ToString("yyMMdd")
 
     $clientName = "TestClientName"
 
-    $header = "# {category} - {title} ({date})"
-    $header = $header -replace "{category}", $category
+    $header = "# {header} - {title} ({date})"
+    $header = $header -replace "{header}", $clientName
     $header = $header -replace "{title}", $title
     $header = $header -replace "{date}", $date
 
