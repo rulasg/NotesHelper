@@ -1,4 +1,4 @@
-# {categoryname} - {title} ({date})
+# {header} - {title} ({date})
 
 > {issueurl}
 

@@ -31,10 +31,10 @@ function New-NoteToday{
     # Extract just the folder name from the path
     $today = Get-Date -Format "yyMMdd"
 
-    $titleHeader = [string]::IsNullOrWhiteSpace($Section) ? $Category : $Section
+    $header = [string]::IsNullOrWhiteSpace($Section) ? $Category : $Section
     
     # Create FullTitle using folder name and title, replacing spaces with underscores
-    $fullTitle = "{0}-{1}-{2}" -f $today, $titleHeader, $Title
+    $fullTitle = "{0}-{1}-{2}" -f $today, $header, $Title
 
     # Normilize fullTitle by removing special characters and replacing spaces with underscores
     $fullTitle = $fullTitle -replace '\s+', '_'
@@ -64,7 +64,7 @@ function New-NoteToday{
         
         # Replace placeholders in the template with actual values
         $content = $content -replace '{title}'       , $Title
-        $content = $content -replace '{categoryname}', $category
+        $content = $content -replace '{header}'      , $header
         $content = $content -replace '{date}'        , $today
         $content = $content -replace '{notes}'       , ([string]::IsNullOrWhiteSpace($Notes)       ? '-' : $Notes)
         $content = $content -replace '{issueurl}'    , ([string]::IsNullOrWhiteSpace($IssueUrl)    ? '<IssueUrl>' : $IssueUrl)
@@ -133,77 +133,41 @@ function New-NoteTodayClient{
 
 } Export-ModuleMember -Function New-NoteTodayClient -Alias cnote
 
-function NewNoteToday{
-    # Add Force parameter to support creation of client folder if it doesn't exist
+function New-NoteTodayMeeting{
     [CmdletBinding()]
-    [alias("note")]
+    [alias("mnote")]
     param(
-        [Parameter(Mandatory)][string] $Category,
-        [Parameter(Mandatory)][string] $Section,
-        [Parameter(Mandatory)][string] $Title,
-        [Parameter()][string] $Notes,
-        [Parameter()][string] $IssueUrl,
-        [Parameter()][string] [ValidateSet("none","meetingmini")] $Template = "none",
+        [Parameter(Mandatory,Position = 0)][string] $Name,
+        [Parameter(Mandatory,Position = 1)][string] $Title,
+        [Parameter(Position = 2)][string] $Notes,
+        [Parameter(ValueFromPipeline)][string] $IssueUrl,
         [Parameter()][switch] $NoOpen,
-        [Parameter()][switch] $AvoidChildFolder,
         [Parameter()][switch] $Force
     )
 
-    # FILENAME
-
-    $folder = Get-NoteFolder -Category $Category -Section $Section -Force:$Force
-
-    # Extract just the folder name from the path
-    $today = Get-Date -Format "yyMMdd"
-    
-    # Create FullTitle using folder name and title, replacing spaces with underscores
-    $fullTitle = "{0}-{1}-{2}" -f $today, $category, $Title
-
-    # Normilize fullTitle by removing special characters and replacing spaces with underscores
-    $fullTitle = $fullTitle -replace '\s+', '_'
-
-    if($AvoidChildFolder){
-        # use folder as the parent folder of the note
-        $fullPath = Join-Path -Path $folder -ChildPath "$fullTitle.md"
-    } else {
-        # Create full path for the note file
-        $fullPath = Join-Path -Path $folder -ChildPath $fullTitle | Join-Path -ChildPath "$fullTitle.md"
+    begin {
+        $category = "meetings"
+        $section = $Name
     }
-    
-    # Check if file already exists
-    if (-Not (Test-Path -Path $fullPath)) {
-        
-        # Get template content
-        $content = Get-TemplatePath $Template | Get-FileContent
-        
-        # Replace placeholders in the template with actual values
-        $content = $content -replace '{title}'       , $Title
-        $content = $content -replace '{categoryname}', $category
-        $content = $content -replace '{date}'        , $today
-        $content = $content -replace '{notes}'       , ([string]::IsNullOrWhiteSpace($Notes)       ? '-' : $Notes)
-        $content = $content -replace '{issueurl}'    , ([string]::IsNullOrWhiteSpace($IssueUrl)    ? '<IssueUrl>' : $IssueUrl)
 
+    process{
 
-        # If $Force check that the folders of $fullPath exists and if not create it
-        if ($Force) {
-            $parentFolder = Split-Path -Path $fullPath -Parent
-            if (-Not (Test-Path -Path $parentFolder)) {
-                New-Item -Path $parentFolder -ItemType Directory -Force | Out-Null
-                Write-Verbose "Created folder: $parentFolder"
-            }
+        $folder = Get-NoteFolder -Category $category -Section $section -Force:$Force
+
+        if (-not $folder) {
+            Write-Error "Client folder for '$section' does not exist and Force was not specified."
+            return
         }
 
-        # Create the file with content
-        Set-Content -Path $fullPath -Value $content -Force
-    }
-    
-    if( -not $NoOpen) {
-        # Open file in VS Code with cursor at the end
-        $gotocmd = "{0}{1}" -f $fullPath, ":9999"
-        code --goto $gotocmd 
+        New-NoteToday `
+            -Category $category `
+            -Section $section `
+            -Title $Title `
+            -Notes $Notes `
+            -IssueUrl $IssueUrl `
+            -Template "meetingmini" `
+            -NoOpen:$NoOpen `
+            -AvoidChildFolder # Add all the notes in the same client folder
     }
 
-    # Return file just created
-    return $fullPath
-
-}
+} Export-ModuleMember -Function New-NoteTodayMeeting -Alias mnote
