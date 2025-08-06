@@ -31,10 +31,10 @@ function New-NoteToday{
     # Extract just the folder name from the path
     $today = Get-Date -Format "yyMMdd"
 
-    $titleHeader = [string]::IsNullOrWhiteSpace($Section) ? $Category : $Section
+    $header = [string]::IsNullOrWhiteSpace($Section) ? $Category : $Section
     
     # Create FullTitle using folder name and title, replacing spaces with underscores
-    $fullTitle = "{0}-{1}-{2}" -f $today, $titleHeader, $Title
+    $fullTitle = "{0}-{1}-{2}" -f $today, $header, $Title
 
     # Normilize fullTitle by removing special characters and replacing spaces with underscores
     $fullTitle = $fullTitle -replace '\s+', '_'
@@ -64,7 +64,7 @@ function New-NoteToday{
         
         # Replace placeholders in the template with actual values
         $content = $content -replace '{title}'       , $Title
-        $content = $content -replace '{categoryname}', $category
+        $content = $content -replace '{header}'      , $header
         $content = $content -replace '{date}'        , $today
         $content = $content -replace '{notes}'       , ([string]::IsNullOrWhiteSpace($Notes)       ? '-' : $Notes)
         $content = $content -replace '{issueurl}'    , ([string]::IsNullOrWhiteSpace($IssueUrl)    ? '<IssueUrl>' : $IssueUrl)
