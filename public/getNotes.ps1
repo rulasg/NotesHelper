@@ -40,7 +40,7 @@ function Get-Notes () {
     }
 
     # Sort by Parent name
-    $ret = $ret | Sort-Object -Property Category
+    $ret = $ret | Sort-Object -Property Name -Descending
 
     return $ret
 
