@@ -34,13 +34,18 @@ function Get-Notes () {
     $ret = $ret | ForEach-Object {
         [PSCustomObject]@{
             Name = $_ | Split-Path -Leaf
-            Category = $_ | Get-NotesCategory
+            Category = $_ | GetNotesCategory
             FullName = $_.FullName
         }
     }
 
     # Sort by Parent name
     $ret = $ret | Sort-Object -Property Name -Descending
+
+    #if $ret is empty and $all is not set write a message sugesting to use -All
+    if (-not $All -and $ret.Count -eq 0) {
+        Write-Host "No notes found in the last 30 days. Use -All to see all notes." -ForegroundColor Yellow
+    }
 
     return $ret
 
@@ -62,7 +67,7 @@ function GetNotes () {
 
 }
 
-function Get-NotesCategory {
+function GetNotesCategory {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory,ValueFromPipeline)][object]$Path
@@ -74,4 +79,4 @@ function Get-NotesCategory {
 
    
 
-} Export-ModuleMember -Function Get-NotesCategory
+}
