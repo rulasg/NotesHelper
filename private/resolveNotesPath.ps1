@@ -36,6 +36,7 @@ function Get-NoteFolder{
         $notesPath = $notesPath | Join-Path -ChildPath $Category
     }
 
+    # Add the section if needed
     if(-Not [string]::IsNullOrWhiteSpace($Section)) {
         $notesPath = $notesPath | Join-Path -ChildPath $Section
     }
