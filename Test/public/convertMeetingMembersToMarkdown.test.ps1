@@ -4,11 +4,11 @@ function Test_ConvertMeetingMembersToMarkdown_SingleCompany {
     $input = "Alice Johnson <alice.johnson@alphatech.com>, `"Bob Smith (AlphaTech)`" <bob.smith@alphatech.com>"
 
     # Act
-    $result = Convert-MeetingMembersToMarkdown -MeetingMembers $input
+    $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $input
 
     # Assert
     $expected = @"
-- Alphatech
+- Alphatech (2)
     - Alice Johnson <alice.johnson@alphatech.com>
     - "Bob Smith (AlphaTech)" <bob.smith@alphatech.com>
 "@
@@ -21,16 +21,16 @@ function Test_ConvertMeetingMembersToMarkdown_MultipleCompanies {
     $input = "Alice Johnson <alice.johnson@alphatech.com>, `"Bob Smith (AlphaTech)`" <bob.smith@alphatech.com>, Alice Johnson <alice.johnson@betasoft.com>, `"Charlie Brown, David`" <charlie.brown@gammatech.com>, `"Emma Wilson, Frank`" <emma.wilson@gammatech.com>, `"Grace Lee, Henry`" <grace.lee@gammatech.com>"
 
     # Act
-    $result = Convert-MeetingMembersToMarkdown -MeetingMembers $input
+    $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $input
 
     # Assert
     $expected = @"
-- Alphatech
+- Alphatech (2)
     - Alice Johnson <alice.johnson@alphatech.com>
     - "Bob Smith (AlphaTech)" <bob.smith@alphatech.com>
-- Betasoft
+- Betasoft (1)
     - Alice Johnson <alice.johnson@betasoft.com>
-- Gammatech
+- Gammatech (3)
     - "Charlie Brown, David" <charlie.brown@gammatech.com>
     - "Emma Wilson, Frank" <emma.wilson@gammatech.com>
     - "Grace Lee, Henry" <grace.lee@gammatech.com>
@@ -44,14 +44,14 @@ function Test_ConvertMeetingMembersToMarkdown_DuplicateMemberDifferentCompanies 
     $input = "Alice Johnson <alice.johnson@alphatech.com>, Alice Johnson <alice.johnson@betasoft.com>"
 
     # Act
-    $result = Convert-MeetingMembersToMarkdown -MeetingMembers $input
+    $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $input
 
     # Assert
     # Same person with different emails should appear in both company groups
     $expected = @"
-- Alphatech
+- Alphatech (1)
     - Alice Johnson <alice.johnson@alphatech.com>
-- Betasoft
+- Betasoft (1)
     - Alice Johnson <alice.johnson@betasoft.com>
 "@
     Assert-AreEqual -Expected $expected -Presented $result -Comment "Same person with different emails should appear in both companies"
@@ -63,14 +63,14 @@ function Test_ConvertMeetingMembersToMarkdown_SpecialCharactersInName {
     $input = "`"Bob Smith (AlphaTech)`" <bob.smith@alphatech.com>, `"Charlie Brown, David`" <charlie.brown@gammatech.com>"
 
     # Act
-    $result = Convert-MeetingMembersToMarkdown -MeetingMembers $input
+    $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $input
 
     # Assert
     # Names with special characters (parentheses, commas) should be preserved
     $expected = @"
-- Alphatech
+- Alphatech (1)
     - "Bob Smith (AlphaTech)" <bob.smith@alphatech.com>
-- Gammatech
+- Gammatech (1)
     - "Charlie Brown, David" <charlie.brown@gammatech.com>
 "@
     Assert-AreEqual -Expected $expected -Presented $result -Comment "Names with special characters should be preserved"
@@ -82,7 +82,7 @@ function Test_ConvertMeetingMembersToMarkdown_EmptyInput {
     $input = ""
 
     # Act
-    $result = Convert-MeetingMembersToMarkdown -MeetingMembers $input
+    $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $input
 
     # Assert
     Assert-AreEqual -Expected "" -Presented $result -Comment "Empty input should return empty string"
@@ -94,7 +94,7 @@ function Test_ConvertMeetingMembersToMarkdown_WhitespaceOnlyInput {
     $input = "   "
 
     # Act
-    $result = Convert-MeetingMembersToMarkdown -MeetingMembers $input
+    $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $input
 
     # Assert
     Assert-AreEqual -Expected "" -Presented $result -Comment "Whitespace-only input should return empty string"
@@ -106,11 +106,11 @@ function Test_ConvertMeetingMembersToMarkdown_SingleMember {
     $input = "John Doe <john.doe@example.com>"
 
     # Act
-    $result = Convert-MeetingMembersToMarkdown -MeetingMembers $input
+    $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $input
 
     # Assert
     $expected = @"
-- Example
+- Example (1)
     - John Doe <john.doe@example.com>
 "@
     Assert-AreEqual -Expected $expected -Presented $result -Comment "Single member should work correctly"
@@ -122,16 +122,16 @@ function Test_ConvertMeetingsMembersToMarkdown_Big_sample{
 "Alice Anderson" <alice.anderson@deltalab.com>, "Amy Adams (She/Her)" <amy.adams@betasoft.com>, "Bob Brown" <bob.brown@betasoft.com>, "Charlie Chen" <charlie.chen@betasoft.com>, david.davis@betasoft.com, "David Dennis" <david.dennis@betasoft.com>, "Emma Evans, Eric" <emma.evans@deltalab.com>, emma.edwards@betasoft.com, "Frank Fields, Fiona" <frank.fields@deltalab.com>, george.garcia@bookings.betasoft.com, george.garcia@betasoft.com, "Grace (AlphaTech) Garcia" <grace.garcia@alphatech.com>, "Henry Harris" <henry.harris@alphatech.com>, "Iris Ingram" <iris.ingram@betasoft.com>, "Jack Johnson" <jack.johnson@betasoft.com>, "James Jackson" <james.jackson@betasoft.com>, "Jennifer Jones" <jennifer.jones@betasoft.com>, "Kevin Kim" <kevin.kim@alphatech.com>, "Kyle Knight" <kyle.knight@betasoft.com>, lisa.lee@betasoft.com, "Laura Lewis" <laura.lewis@alphatech.com>, "Mark Martinez" <mark.martinez@alphatech.com>
 "@
 
-    $result = Convert-MeetingMembersToMarkdown -MeetingMembers $imput
+    $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $imput
 
     Assert-AreEqual -Presented $result -Expected @"
-- Alphatech
+- Alphatech (5)
     - "Grace (AlphaTech) Garcia" <grace.garcia@alphatech.com>
     - "Henry Harris" <henry.harris@alphatech.com>
     - "Kevin Kim" <kevin.kim@alphatech.com>
     - "Laura Lewis" <laura.lewis@alphatech.com>
     - "Mark Martinez" <mark.martinez@alphatech.com>
-- Betasoft
+- Betasoft (9)
     - "Amy Adams (She/Her)" <amy.adams@betasoft.com>
     - "Bob Brown" <bob.brown@betasoft.com>
     - "Charlie Chen" <charlie.chen@betasoft.com>
@@ -141,7 +141,7 @@ function Test_ConvertMeetingsMembersToMarkdown_Big_sample{
     - "James Jackson" <james.jackson@betasoft.com>
     - "Jennifer Jones" <jennifer.jones@betasoft.com>
     - "Kyle Knight" <kyle.knight@betasoft.com>
-- Deltalab
+- Deltalab (3)
     - "Alice Anderson" <alice.anderson@deltalab.com>
     - "Emma Evans, Eric" <emma.evans@deltalab.com>
     - "Frank Fields, Fiona" <frank.fields@deltalab.com>
