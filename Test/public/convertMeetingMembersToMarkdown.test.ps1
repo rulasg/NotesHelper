@@ -1,16 +1,16 @@
 function Test_ConvertMeetingMembersToMarkdown_SingleCompany {
 
     # Arrange
-    $input = "Gisela Torres <0gis0@github.com>, `"David (GitHub) Losert`" <davelosert@github.com>"
+    $input = "Alice Johnson <alice.johnson@alphatech.com>, `"Bob Smith (AlphaTech)`" <bob.smith@alphatech.com>"
 
     # Act
     $result = Convert-MeetingMembersToMarkdown -MeetingMembers $input
 
     # Assert
     $expected = @"
-- Github
-    - Gisela Torres <0gis0@github.com>
-    - "David (GitHub) Losert" <davelosert@github.com>
+- Alphatech
+    - Alice Johnson <alice.johnson@alphatech.com>
+    - "Bob Smith (AlphaTech)" <bob.smith@alphatech.com>
 "@
     Assert-AreEqual -Expected $expected -Presented $result -Comment "Single company output should match expected format"
 }
@@ -18,42 +18,41 @@ function Test_ConvertMeetingMembersToMarkdown_SingleCompany {
 function Test_ConvertMeetingMembersToMarkdown_MultipleCompanies {
 
     # Arrange
-    $input = "Gisela Torres <0gis0@github.com>, `"David (GitHub) Losert`" <davelosert@github.com>, Gisela Torres <giselat@microsoft.com>, `"Martin Fernandez, Borja`" <mfborj5@mapfre.com>, `"Jovanovic Obradovic, Mat`" <mjovanovic@mapfre.com>, `"Molina Merchan, Jesus`" <mmjesu6@mapfre.com>"
+    $input = "Alice Johnson <alice.johnson@alphatech.com>, `"Bob Smith (AlphaTech)`" <bob.smith@alphatech.com>, Alice Johnson <alice.johnson@betasoft.com>, `"Charlie Brown, David`" <charlie.brown@gammatech.com>, `"Emma Wilson, Frank`" <emma.wilson@gammatech.com>, `"Grace Lee, Henry`" <grace.lee@gammatech.com>"
 
     # Act
     $result = Convert-MeetingMembersToMarkdown -MeetingMembers $input
 
     # Assert
     $expected = @"
-- Github
-    - Gisela Torres <0gis0@github.com>
-    - "David (GitHub) Losert" <davelosert@github.com>
-- Mapfre
-    - "Martin Fernandez, Borja" <mfborj5@mapfre.com>
-    - "Jovanovic Obradovic, Mat" <mjovanovic@mapfre.com>
-    - "Molina Merchan, Jesus" <mmjesu6@mapfre.com>
-- Microsoft
-    - Gisela Torres <giselat@microsoft.com>
+- Alphatech
+    - Alice Johnson <alice.johnson@alphatech.com>
+    - "Bob Smith (AlphaTech)" <bob.smith@alphatech.com>
+- Betasoft
+    - Alice Johnson <alice.johnson@betasoft.com>
+- Gammatech
+    - "Charlie Brown, David" <charlie.brown@gammatech.com>
+    - "Emma Wilson, Frank" <emma.wilson@gammatech.com>
+    - "Grace Lee, Henry" <grace.lee@gammatech.com>
 "@
     Assert-AreEqual -Expected $expected -Presented $result -Comment "Multiple companies should be sorted alphabetically"
 }
 
 function Test_ConvertMeetingMembersToMarkdown_DuplicateMemberDifferentCompanies {
 
+    # Arrange
+    $input = "Alice Johnson <alice.johnson@alphatech.com>, Alice Johnson <alice.johnson@betasoft.com>"
 
-    $input = "Gisela Torres <0gis0@github.com>, Gisela Torres <giselat@microsoft.com>"
-
-
+    # Act
     $result = Convert-MeetingMembersToMarkdown -MeetingMembers $input
-
 
     # Assert
     # Same person with different emails should appear in both company groups
     $expected = @"
-- Github
-    - Gisela Torres <0gis0@github.com>
-- Microsoft
-    - Gisela Torres <giselat@microsoft.com>
+- Alphatech
+    - Alice Johnson <alice.johnson@alphatech.com>
+- Betasoft
+    - Alice Johnson <alice.johnson@betasoft.com>
 "@
     Assert-AreEqual -Expected $expected -Presented $result -Comment "Same person with different emails should appear in both companies"
 }
@@ -61,7 +60,7 @@ function Test_ConvertMeetingMembersToMarkdown_DuplicateMemberDifferentCompanies 
 function Test_ConvertMeetingMembersToMarkdown_SpecialCharactersInName {
 
     # Arrange
-    $input = "`"David (GitHub) Losert`" <davelosert@github.com>, `"Martin Fernandez, Borja`" <mfborj5@mapfre.com>"
+    $input = "`"Bob Smith (AlphaTech)`" <bob.smith@alphatech.com>, `"Charlie Brown, David`" <charlie.brown@gammatech.com>"
 
     # Act
     $result = Convert-MeetingMembersToMarkdown -MeetingMembers $input
@@ -69,10 +68,10 @@ function Test_ConvertMeetingMembersToMarkdown_SpecialCharactersInName {
     # Assert
     # Names with special characters (parentheses, commas) should be preserved
     $expected = @"
-- Github
-    - "David (GitHub) Losert" <davelosert@github.com>
-- Mapfre
-    - "Martin Fernandez, Borja" <mfborj5@mapfre.com>
+- Alphatech
+    - "Bob Smith (AlphaTech)" <bob.smith@alphatech.com>
+- Gammatech
+    - "Charlie Brown, David" <charlie.brown@gammatech.com>
 "@
     Assert-AreEqual -Expected $expected -Presented $result -Comment "Names with special characters should be preserved"
 }
@@ -120,31 +119,31 @@ function Test_ConvertMeetingMembersToMarkdown_SingleMember {
 function Test_ConvertMeetingsMembersToMarkdown_Big_sample{
 
     $imput = @"
-"Angulo, Amparo" <amparo.angulo@accenture.com>, "Ana González Talaván (She/Her)" <anamg@microsoft.com>, David Mangas Nuñez <dmangas@microsoft.com>, Felipe Tomazini <ftomazini@microsoft.com>, janet.amezcua@microsoft.com, Jose Luis De la Cruz Moreno <joseld@microsoft.com>, "Mora Alonso, Juan Antonio" <juan.a.mora@accenture.com>, juan.olivera@microsoft.com, "Vilanova Arnal, Juan" <juan.vilanova.arnal@accenture.com>, miguelselman1@bookings.microsoft.com, miguelselman@microsoft.com, "Oana (GitHub) Dinca" <oanamariadinca@github.com>, Oscar Muller <oscarmuller@github.com>, Pilar Blasco <pilarblasco@microsoft.com>, Ramiro Gómez de la Cruz <ramiro.gomez@microsoft.com>, Ricardo Sastre Martín <ricardosa@microsoft.com>, Roberto Arocha <roberto.arocha@microsoft.com>, Ryan Drewery <ryandrewery@github.com>, Sergio Gallego Martinez <sergio.gallego@microsoft.com>, silviahe@microsoft.com, Stéphane Biermann <stephanebiermann@github.com>, Tim Guibert <timguibert@github.com>
+"Alice Anderson" <alice.anderson@deltalab.com>, "Amy Adams (She/Her)" <amy.adams@betasoft.com>, "Bob Brown" <bob.brown@betasoft.com>, "Charlie Chen" <charlie.chen@betasoft.com>, david.davis@betasoft.com, "David Dennis" <david.dennis@betasoft.com>, "Emma Evans, Eric" <emma.evans@deltalab.com>, emma.edwards@betasoft.com, "Frank Fields, Fiona" <frank.fields@deltalab.com>, george.garcia@bookings.betasoft.com, george.garcia@betasoft.com, "Grace (AlphaTech) Garcia" <grace.garcia@alphatech.com>, "Henry Harris" <henry.harris@alphatech.com>, "Iris Ingram" <iris.ingram@betasoft.com>, "Jack Johnson" <jack.johnson@betasoft.com>, "James Jackson" <james.jackson@betasoft.com>, "Jennifer Jones" <jennifer.jones@betasoft.com>, "Kevin Kim" <kevin.kim@alphatech.com>, "Kyle Knight" <kyle.knight@betasoft.com>, lisa.lee@betasoft.com, "Laura Lewis" <laura.lewis@alphatech.com>, "Mark Martinez" <mark.martinez@alphatech.com>
 "@
 
     $result = Convert-MeetingMembersToMarkdown -MeetingMembers $imput
 
     Assert-AreEqual -Presented $result -Expected @"
-- Accenture
-    - "Angulo, Amparo" <amparo.angulo@accenture.com>
-    - "Mora Alonso, Juan Antonio" <juan.a.mora@accenture.com>
-    - "Vilanova Arnal, Juan" <juan.vilanova.arnal@accenture.com>
-- Github
-    - "Oana (GitHub) Dinca" <oanamariadinca@github.com>
-    - Oscar Muller <oscarmuller@github.com>
-    - Ryan Drewery <ryandrewery@github.com>
-    - Stéphane Biermann <stephanebiermann@github.com>
-    - Tim Guibert <timguibert@github.com>
-- Microsoft
-    - "Ana González Talaván (She/Her)" <anamg@microsoft.com>
-    - David Mangas Nuñez <dmangas@microsoft.com>
-    - Felipe Tomazini <ftomazini@microsoft.com>
-    - Jose Luis De la Cruz Moreno <joseld@microsoft.com>
-    - Pilar Blasco <pilarblasco@microsoft.com>
-    - Ramiro Gómez de la Cruz <ramiro.gomez@microsoft.com>
-    - Ricardo Sastre Martín <ricardosa@microsoft.com>
-    - Roberto Arocha <roberto.arocha@microsoft.com>
-    - Sergio Gallego Martinez <sergio.gallego@microsoft.com>
+- Alphatech
+    - "Grace (AlphaTech) Garcia" <grace.garcia@alphatech.com>
+    - "Henry Harris" <henry.harris@alphatech.com>
+    - "Kevin Kim" <kevin.kim@alphatech.com>
+    - "Laura Lewis" <laura.lewis@alphatech.com>
+    - "Mark Martinez" <mark.martinez@alphatech.com>
+- Betasoft
+    - "Amy Adams (She/Her)" <amy.adams@betasoft.com>
+    - "Bob Brown" <bob.brown@betasoft.com>
+    - "Charlie Chen" <charlie.chen@betasoft.com>
+    - "David Dennis" <david.dennis@betasoft.com>
+    - "Iris Ingram" <iris.ingram@betasoft.com>
+    - "Jack Johnson" <jack.johnson@betasoft.com>
+    - "James Jackson" <james.jackson@betasoft.com>
+    - "Jennifer Jones" <jennifer.jones@betasoft.com>
+    - "Kyle Knight" <kyle.knight@betasoft.com>
+- Deltalab
+    - "Alice Anderson" <alice.anderson@deltalab.com>
+    - "Emma Evans, Eric" <emma.evans@deltalab.com>
+    - "Frank Fields, Fiona" <frank.fields@deltalab.com>
 "@
 }
