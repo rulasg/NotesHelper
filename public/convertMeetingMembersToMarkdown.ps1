@@ -2,8 +2,7 @@
 function Convert-MeetingMembersToMarkdown {
     [CmdletBinding()]
     param(
-        [Parameter(Position = 0, ValueFromPipeline)][string]$MeetingMembers,
-        [Parameter()][switch]$SortByCompany
+        [Parameter(Position = 0, ValueFromPipeline)][string]$MeetingMembers
     )
 
     process {

@@ -25,8 +25,13 @@ function parseMemberEmail {
             if ($domain) {
                 # Get company name from domain (first part before any dots)
                 $company = ($domain -split '\.')[0]
-                # Capitalize first letter
-                $company = $company.Substring(0, 1).ToUpper() + $company.Substring(1).ToLower()
+                # Capitalize first letter if company has content
+                if ($company.Length -gt 0) {
+                    $company = $company.Substring(0, 1).ToUpper() + $company.Substring(1).ToLower()
+                }
+                else {
+                    $company = "Unknown"
+                }
             }
             else {
                 $company = "Unknown"
