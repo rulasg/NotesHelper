@@ -116,3 +116,35 @@ function Test_ConvertMeetingMembersToMarkdown_SingleMember {
 "@
     Assert-AreEqual -Expected $expected -Presented $result -Comment "Single member should work correctly"
 }
+
+function Test_ConvertMeetingsMembersToMarkdown_Big_sample{
+
+    $imput = @"
+"Angulo, Amparo" <amparo.angulo@accenture.com>, "Ana González Talaván (She/Her)" <anamg@microsoft.com>, David Mangas Nuñez <dmangas@microsoft.com>, Felipe Tomazini <ftomazini@microsoft.com>, janet.amezcua@microsoft.com, Jose Luis De la Cruz Moreno <joseld@microsoft.com>, "Mora Alonso, Juan Antonio" <juan.a.mora@accenture.com>, juan.olivera@microsoft.com, "Vilanova Arnal, Juan" <juan.vilanova.arnal@accenture.com>, miguelselman1@bookings.microsoft.com, miguelselman@microsoft.com, "Oana (GitHub) Dinca" <oanamariadinca@github.com>, Oscar Muller <oscarmuller@github.com>, Pilar Blasco <pilarblasco@microsoft.com>, Ramiro Gómez de la Cruz <ramiro.gomez@microsoft.com>, Ricardo Sastre Martín <ricardosa@microsoft.com>, Roberto Arocha <roberto.arocha@microsoft.com>, Ryan Drewery <ryandrewery@github.com>, Sergio Gallego Martinez <sergio.gallego@microsoft.com>, silviahe@microsoft.com, Stéphane Biermann <stephanebiermann@github.com>, Tim Guibert <timguibert@github.com>
+"@
+
+    $result = Convert-MeetingMembersToMarkdown -MeetingMembers $imput
+
+    Assert-AreEqual -Presented $result -Expected @"
+- Accenture
+    - "Angulo, Amparo" <amparo.angulo@accenture.com>
+    - "Mora Alonso, Juan Antonio" <juan.a.mora@accenture.com>
+    - "Vilanova Arnal, Juan" <juan.vilanova.arnal@accenture.com>
+- Github
+    - "Oana (GitHub) Dinca" <oanamariadinca@github.com>
+    - Oscar Muller <oscarmuller@github.com>
+    - Ryan Drewery <ryandrewery@github.com>
+    - Stéphane Biermann <stephanebiermann@github.com>
+    - Tim Guibert <timguibert@github.com>
+- Microsoft
+    - "Ana González Talaván (She/Her)" <anamg@microsoft.com>
+    - David Mangas Nuñez <dmangas@microsoft.com>
+    - Felipe Tomazini <ftomazini@microsoft.com>
+    - Jose Luis De la Cruz Moreno <joseld@microsoft.com>
+    - Pilar Blasco <pilarblasco@microsoft.com>
+    - Ramiro Gómez de la Cruz <ramiro.gomez@microsoft.com>
+    - Ricardo Sastre Martín <ricardosa@microsoft.com>
+    - Roberto Arocha <roberto.arocha@microsoft.com>
+    - Sergio Gallego Martinez <sergio.gallego@microsoft.com>
+"@
+}
