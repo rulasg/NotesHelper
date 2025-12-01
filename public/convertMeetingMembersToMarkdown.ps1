@@ -1,5 +1,5 @@
 
-function Convert-MeetingMembersToMarkdown {
+function Convert-NotesMeetingMembersToMarkdown {
     [CmdletBinding()]
     param(
         [Parameter(Position = 0, ValueFromPipeline)][string]$MeetingMembers
@@ -55,4 +55,4 @@ function Convert-MeetingMembersToMarkdown {
 
         return $result
     }
-} Export-ModuleMember -Function 'Convert-MeetingMembersToMarkdown'
+} Export-ModuleMember -Function 'Convert-NotesMeetingMembersToMarkdown'
