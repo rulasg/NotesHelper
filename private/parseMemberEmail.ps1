@@ -68,8 +68,9 @@ function groupMembersByCompany {
     $result = @()
     
     foreach ($group in $grouped) {
-        # Add company header
-        $result += "- $($group.Name)"
+        # Add company header with member count
+        $memberCount = $group.Group.Count
+        $result += "- $($group.Name) ($memberCount)"
         
         # Add members with 4-space indentation
         foreach ($member in $group.Group) {
