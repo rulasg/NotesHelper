@@ -2,10 +2,3 @@
 
 > {issueurl}
 
-## Notes
-
-{notes}
-
-## Next Steps
-
--
