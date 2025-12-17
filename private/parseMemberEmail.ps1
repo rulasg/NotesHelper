@@ -45,6 +45,37 @@ function parseMemberEmail {
             }
         }
         
+        # Pattern: just an email address (email@domain.com)
+        $emailPattern = '^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$'
+        
+        if ($memberString -match $emailPattern) {
+            $email = $memberString
+            
+            # Extract domain from email
+            $domain = ($email -split '@')[1]
+            if ($domain) {
+                # Get company name from domain (first part before any dots)
+                $company = ($domain -split '\.')[0]
+                # Capitalize first letter if company has content
+                if ($company.Length -gt 0) {
+                    $company = $company.Substring(0, 1).ToUpper() + $company.Substring(1).ToLower()
+                }
+                else {
+                    $company = "Unknown"
+                }
+            }
+            else {
+                $company = "Unknown"
+            }
+
+            return [PSCustomObject]@{
+                DisplayName    = $email
+                Email          = $email
+                Company        = $company
+                OriginalFormat = $memberString
+            }
+        }
+        
         return $null
     }
 }
