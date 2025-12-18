@@ -103,8 +103,9 @@ function groupMembersByCompany {
         $memberCount = $group.Group.Count
         $result += "- $($group.Name) ($memberCount)"
         
-        # Add members with 4-space indentation
-        foreach ($member in $group.Group) {
+        # Add members with 4-space indentation, sorted case-insensitively by DisplayName (without quotes)
+        $sortedMembers = $group.Group | Sort-Object -Property { ($_.DisplayName.Trim('"')).ToLower() }
+        foreach ($member in $sortedMembers) {
             $result += "    - $($member.OriginalFormat)"
         }
     }
