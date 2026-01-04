@@ -24,12 +24,13 @@ function Resolve-NotesPath {
 function Get-NoteFolder{
     [CmdletBinding()]
     param(
+        [Parameter()][string] $RootPath,
         [Parameter()][string] $Category,
         [Parameter()][string] $Section,
         [Parameter()][switch] $Force
     )
     
-    $notesPath = Resolve-NotesPath
+    $notesPath = Resolve-NotesPath -Path $RootPath
 
     # Add the category if needed
     if(-Not [string]::IsNullOrWhiteSpace($Category)) {
