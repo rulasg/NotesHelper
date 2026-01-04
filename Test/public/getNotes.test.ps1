@@ -14,12 +14,12 @@ function Test_GetNotes_Category{
     Assert-Count -Expected 4 -Presented $result
 
     # Pick a random file to test
-    $file = $result[1]
+    $file = $result[2]
     Assert-AreEqual -Expected "name21-name22-name23.md" -Presented $file.Name
     Assert-AreEqual -Expected "name22" -Presented $file.Category
     Assert-AreEqualPath -Expected $file1 -Presented $file.FullName
 
-    $file = $result[3]
+    $file = $result[0]
     Assert-AreEqual -Expected "name41-name42-name43.md" -Presented $file.Name
     Assert-AreEqual -Expected "name42" -Presented $file.Category
     Assert-AreEqualPath -Expected $file3 -Presented $file.FullName
@@ -48,22 +48,22 @@ function Test_GetNotes_Category_WithDots{
 
     # Pick a random file to test
         # Pick a random file to test
-    $file = $result[1]
+    $file = $result[6]
     Assert-AreEqual -Expected "name11-name12-name13.md" -Presented $file.Name
     Assert-AreEqual -Expected "name12" -Presented $file.Category
     Assert-AreEqualPath -Expected $file1 -Presented $file.FullName
 
-    $file = $result[3]
+    $file = $result[4]
     Assert-AreEqual -Expected "name31-name32-name33.md" -Presented $file.Name
     Assert-AreEqual -Expected "name32" -Presented $file.Category
     Assert-AreEqualPath -Expected $file3 -Presented $file.FullName
 
-    $file = $result[5]
+    $file = $result[2]
     Assert-AreEqual -Expected "name51.name52.name53.md" -Presented $file.Name
     Assert-AreEqual -Expected "name52" -Presented $file.Category
     Assert-AreEqualPath -Expected $file5 -Presented $file.FullName
 
-    $file = $result[7]
+    $file = $result[0]
     Assert-AreEqual -Expected "name71.name72.name73.md" -Presented $file.Name
     Assert-AreEqual -Expected "name72" -Presented $file.Category
     Assert-AreEqualPath -Expected $file7 -Presented $file.FullName
