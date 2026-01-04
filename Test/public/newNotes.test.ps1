@@ -163,6 +163,30 @@ function Test_NewNotes_SUCCESS{
 
 }
 
-# ./TestNotesRoot/howto/250720-howto-someting_that_may_be_useful/250720-howto-someting_that_may_be_useful.md ] 
-# ./TestNotesRoot/howto/250728-howto-someting_that_may_be_useful/250728-howto-someting_that_may_be_useful.md ]
-# [ /tmp/Posh_Testing_250728_87d8dc/TestRunFolder/Test_NewNotesToday_Failing
+function Test_NewNotes_SUCCESS_WithRootPath{
+
+    Reset-InvokeCommandMock
+
+    $RootFolder = "TestNotesRoot"
+
+    New-TestingFolder $RootFolder
+
+    New-TestingFolder -Path "./$RootFolder/howto"
+    $today = (Get-Date).ToString("yyMMdd")
+
+    # Act
+    $result = New-Note howto "someting that may be useful" -NoOpen -RootPath $RootFolder
+
+    $expectedPath = "./$RootFolder/howto/howto-someting_that_may_be_useful/howto-someting_that_may_be_useful.md"
+
+    Assert-AreEqualPath -Expected $expectedPath -Presented $result
+
+    # With date
+
+    $result = New-Note howto "someting that may be useful" -NoOpen -Date $today -RootPath $RootFolder
+
+    $expectedPath = "./$RootFolder/howto/$today-howto-someting_that_may_be_useful/$today-howto-someting_that_may_be_useful.md"
+
+    Assert-AreEqualPath -Expected $expectedPath -Presented $result
+
+}

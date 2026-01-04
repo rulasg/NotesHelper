@@ -13,12 +13,14 @@ function New-Note{
         [Parameter()][string] [ValidateSet("none","meetingmini")] $Template = "none",
         [Parameter()][switch] $NoOpen,
         [Parameter()][switch] $AvoidChildFolder,
-        [Parameter()][switch] $Force
+        [Parameter()][switch] $Force,
+        [Parameter()][string] $RootPath
+
     )
 
     # FILENAME
 
-    $folder = Get-NoteFolder -Category $Category -Section $Section -Force:$Force
+    $folder = Get-NoteFolder -RootPath $RootPath -Category $Category -Section $Section -Force:$Force
 
     if(-Not $folder) {
         Write-Error "Failed to create the folder for the note. Try -Force."
@@ -133,20 +135,21 @@ function New-NoteToday{
     [CmdletBinding()]
     [alias("note")]
     param(
-        [Parameter(Mandatory,Position = 0)][string] $Category,
-        [Parameter(Mandatory,Position = 1)][string] $Title,
+        [Parameter(Mandatory,Position = 0)][string] $Title,
+        [Parameter()][string] $Category = "Notes",
         [Parameter()][string] $Section,
         [Parameter()][string] $Notes,
         [Parameter()][string] $IssueUrl,
         [Parameter()][string] [ValidateSet("none","meetingmini")] $Template = "none",
         [Parameter()][switch] $NoOpen,
         [Parameter()][switch] $AvoidChildFolder,
-        [Parameter()][switch] $Force
+        [Parameter()][switch] $Force,
+        [Parameter()][string] $RootPath
     )
 
     # FILENAME
 
-    $folder = Get-NoteFolder -Category $Category -Section $Section -Force:$Force
+    $folder = Get-NoteFolder -RootPath $RootPath -Category $Category -Section $Section -Force:$Force
 
     if(-Not $folder) {
         Write-Error "Failed to create the folder for the note. Try -Force."
@@ -272,7 +275,8 @@ function New-NoteTodayMeeting{
         [Parameter(Position = 2)][string] $Notes,
         [Parameter(ValueFromPipeline)][string] $IssueUrl,
         [Parameter()][switch] $NoOpen,
-        [Parameter()][switch] $Force
+        [Parameter()][switch] $Force,
+        [Parameter()][string] $RootPath
     )
 
     begin {
@@ -282,7 +286,7 @@ function New-NoteTodayMeeting{
 
     process{
 
-        $folder = Get-NoteFolder -Category $category -Section $section -Force:$Force
+        $folder = Get-NoteFolder -RootPath $RootPath -Category $category -Section $section -Force:$Force
 
         if (-not $folder) {
             Write-Error "Client folder for '$section' does not exist and Force was not specified."
