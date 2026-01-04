@@ -2,3 +2,6 @@
 
 > {issueurl}
 
+## Notes
+
+{notes}
