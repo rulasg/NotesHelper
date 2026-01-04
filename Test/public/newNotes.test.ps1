@@ -54,6 +54,29 @@ function Test_NewNote_Simple_WithDate{
 
 }
 
+function Test_NewNote_Simple_WithOutDate{
+
+    Reset-InvokeCommandMock
+
+    New-TestingFolder "TestNotesRoot"
+    MockCallToString 'Invoke-NotesHelperNotesRoot' -OutString "./TestNotesRoot"
+
+    $category = "TestClient"
+    $title = "This is the title of the note"
+
+    $header = "# {category} - {title} (NoDate)"
+    $header = $header -replace "{category}", $category
+    $header = $header -replace "{title}", $title
+
+    # Add note with date
+    $path = New-Note $category $title -NoOpen -Force -Date $date
+
+    $content = Get-Content -Path $path -Raw
+
+    Assert-IsTrue $content.StartsWith($header)
+
+}
+
 function Test_AddNotesToday_Simple_AddNoteFolder {
 
     Reset-InvokeCommandMock
