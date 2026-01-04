@@ -135,8 +135,8 @@ function New-NoteToday{
     [CmdletBinding()]
     [alias("note")]
     param(
-        [Parameter(Mandatory,Position = 0)][string] $Title,
-        [Parameter()][string] $Category = "Notes",
+        [Parameter(Mandatory,Position = 0)][string] $Category,
+        [Parameter(Mandatory,Position = 1)][string] $Title,
         [Parameter()][string] $Section,
         [Parameter()][string] $Notes,
         [Parameter()][string] $IssueUrl,
