@@ -142,7 +142,7 @@ function New-NoteToday{
         [Parameter()][string] $IssueUrl,
         [Parameter()][string] [ValidateSet("none","meetingmini")] $Template = "none",
         [Parameter()][switch] $NoOpen,
-        [Parameter()][switch] $AvoidChildFolder,
+        [Parameter()][switch] $AddNoteFolder,
         [Parameter()][switch] $Force,
         [Parameter()][string] $RootPath
     )
@@ -174,10 +174,7 @@ function New-NoteToday{
 
     # Create the note base folder
 
-    if($AvoidChildFolder){
-        # use folder as the parent folder of the note
-        $fullPath = Join-Path -Path $folder -ChildPath "$fullTitle.md"
-    } else {
+    if($AddNoteFolder){
         # Create full path for the note file
         $noteFolder = Join-Path -Path $folder -ChildPath $fullTitle
         
@@ -187,8 +184,11 @@ function New-NoteToday{
         }
 
         $fullPath =$noteFolder | Join-Path -ChildPath "$fullTitle.md"
+    } else {
+            # use folder as the parent folder of the note
+        $fullPath = Join-Path -Path $folder -ChildPath "$fullTitle.md"
     }
-    
+
     # Check if file already exists
     if (-Not (Test-Path -Path $fullPath)) {
         
@@ -260,8 +260,7 @@ function New-NoteTodayClient{
             -Notes $Notes `
             -IssueUrl $IssueUrl `
             -Template "meetingmini" `
-            -NoOpen:$NoOpen `
-            -AvoidChildFolder # Add all the notes in the same client folder
+            -NoOpen:$NoOpen
     }
 
 } Export-ModuleMember -Function New-NoteTodayClient -Alias cnote
@@ -300,8 +299,7 @@ function New-NoteTodayMeeting{
             -Notes $Notes `
             -IssueUrl $IssueUrl `
             -Template "meetingmini" `
-            -NoOpen:$NoOpen `
-            -AvoidChildFolder # Add all the notes in the same client folder
+            -NoOpen:$NoOpen
     }
 
 } Export-ModuleMember -Function New-NoteTodayMeeting -Alias mnote

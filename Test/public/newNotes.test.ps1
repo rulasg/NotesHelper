@@ -14,7 +14,7 @@ function Test_AddNotesToday_Simple{
     $header = $header -replace "{title}", $title
     $header = $header -replace "{date}", $date
 
-    New-TestingFolder -Path "./TestNotesRoot/$category"
+    $categoryPath = New-TestingFolder -Path "./TestNotesRoot/$category" -PassThru
 
     # Add note with folder using -Force
     $path = New-NoteToday $category $title -NoOpen -Force
@@ -22,6 +22,27 @@ function Test_AddNotesToday_Simple{
     $content = Get-Content -Path $path -Raw
 
     Assert-IsTrue $content.StartsWith($header)
+
+    # File should be in a folder of its own name
+    $parentPath = $path | Split-Path -parent
+    Assert-AreEqualPath -Expected $categoryPath -Presented $parentPath
+
+}
+
+function Test_AddNotesToday_Simple_AddNoteFolder {
+
+    Reset-InvokeCommandMock
+
+    New-TestingFolder "TestNotesRoot"
+    MockCallToString 'Invoke-NotesHelperNotesRoot' -OutString "./TestNotesRoot"
+
+    $category = "TestClient"
+    $title = "This is the title of the note"
+
+    New-TestingFolder -Path "./TestNotesRoot/$category"
+
+    # Add folder for the note -AddNoteFolder
+    $path = New-NoteToday $category $title -NoOpen -AddNoteFolder
 
     # File should be in a folder of its own name
     $parentName = $path | Split-Path -Parent | Split-Path -Leaf
@@ -32,37 +53,6 @@ function Test_AddNotesToday_Simple{
     # Parent folder should be child or category folder
     $granParent = $path | Split-Path -Parent | Split-Path -Parent | Split-Path -Leaf
     Assert-AreEqual -Expected $granParent -Presented $category
-}
-
-function Test_AddNotesToday_Simple_AvoidChildFolder {
-
-    Reset-InvokeCommandMock
-
-    New-TestingFolder "TestNotesRoot"
-    MockCallToString 'Invoke-NotesHelperNotesRoot' -OutString "./TestNotesRoot"
-
-    $category = "TestClient"
-    $title = "This is the title of the note"
-    $date = (Get-Date).ToString("yyMMdd")
-
-    $header = "# {category} - {title} ({date})"
-    $header = $header -replace "{category}", $category
-    $header = $header -replace "{title}", $title
-    $header = $header -replace "{date}", $date
-
-    New-TestingFolder -Path "./TestNotesRoot/$category"
-
-    # Add note on the same folder using -AvoidChildFolder
-    $path = New-NoteToday $category $title -NoOpen -AvoidChildFolder
-
-    $content = Get-Content -Path $path -Raw
-
-    Assert-IsTrue $content.StartsWith($header)
-
-    # Parent folder should be child or category folder
-    $granParent = $path | Split-Path -Parent | Split-Path -Leaf
-    Assert-AreEqual -Expected $granParent -Presented $category
-
 }
 
 function Test_AddNotesToday_WithContent {
@@ -85,7 +75,7 @@ function Test_AddNotesToday_WithContent {
     New-TestingFolder -Path "./TestNotesRoot/$category"
 
     # Check Notes content
-    $path = New-NoteToday $category $title -NoOpen -AvoidChildFolder -Notes $notes
+    $path = New-NoteToday $category $title -NoOpen -Notes $notes
 
     $content = Get-Content -Path $path -Raw
 
