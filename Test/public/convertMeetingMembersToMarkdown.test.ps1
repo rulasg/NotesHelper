@@ -116,6 +116,46 @@ function Test_ConvertMeetingMembersToMarkdown_SingleMember {
     Assert-AreEqual -Expected $expected -Presented $result -Comment "Single member should work correctly"
 }
 
+function Test_ConvertMeetingMembersToMarkdown_EmailOnlyFormat {
+
+    # Arrange
+    $input = "john.doe@example.com, jane.smith@example.com, bob@alphatech.com"
+
+    # Act
+    $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $input
+
+    # Assert
+    $expected = @"
+- Alphatech (1)
+    - bob@alphatech.com
+- Example (2)
+    - jane.smith@example.com
+    - john.doe@example.com
+"@
+    Assert-AreEqual -Expected $expected -Presented $result -Comment "Email-only format entries should be included and grouped by company"
+}
+
+function Test_ConvertMeetingMembersToMarkdown_MixedEmailFormats {
+
+    # Arrange
+    $input = "Alice Johnson <alice.johnson@alphatech.com>, bob.smith@alphatech.com, `"Charlie Chen`" <charlie.chen@betasoft.com>, david@betasoft.com"
+
+    # Act
+    $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $input
+
+    # Assert
+    $expected = @"
+- Alphatech (2)
+    - Alice Johnson <alice.johnson@alphatech.com>
+    - bob.smith@alphatech.com
+- Betasoft (2)
+    - "Charlie Chen" <charlie.chen@betasoft.com>
+    - david@betasoft.com
+"@
+    Assert-AreEqual -Expected $expected -Presented $result -Comment "Mixed email formats should work together, sorted alphabetically by company and member"
+}
+
+
 function Test_ConvertMeetingsMembersToMarkdown_Big_sample{
 
     $imput = @"
@@ -124,26 +164,35 @@ function Test_ConvertMeetingsMembersToMarkdown_Big_sample{
 
     $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $imput
 
-    Assert-AreEqual -Presented $result -Expected @"
+    $expected = @"
 - Alphatech (5)
     - "Grace (AlphaTech) Garcia" <grace.garcia@alphatech.com>
     - "Henry Harris" <henry.harris@alphatech.com>
     - "Kevin Kim" <kevin.kim@alphatech.com>
     - "Laura Lewis" <laura.lewis@alphatech.com>
     - "Mark Martinez" <mark.martinez@alphatech.com>
-- Betasoft (9)
+- Betasoft (13)
     - "Amy Adams (She/Her)" <amy.adams@betasoft.com>
     - "Bob Brown" <bob.brown@betasoft.com>
     - "Charlie Chen" <charlie.chen@betasoft.com>
     - "David Dennis" <david.dennis@betasoft.com>
+    - david.davis@betasoft.com
+    - emma.edwards@betasoft.com
+    - george.garcia@betasoft.com
     - "Iris Ingram" <iris.ingram@betasoft.com>
     - "Jack Johnson" <jack.johnson@betasoft.com>
     - "James Jackson" <james.jackson@betasoft.com>
     - "Jennifer Jones" <jennifer.jones@betasoft.com>
     - "Kyle Knight" <kyle.knight@betasoft.com>
+    - lisa.lee@betasoft.com
+- Bookings (1)
+    - george.garcia@bookings.betasoft.com
 - Deltalab (3)
     - "Alice Anderson" <alice.anderson@deltalab.com>
     - "Emma Evans, Eric" <emma.evans@deltalab.com>
     - "Frank Fields, Fiona" <frank.fields@deltalab.com>
 "@
+
+    Assert-AreEqual -Presented $result -Expected $expected
+
 }

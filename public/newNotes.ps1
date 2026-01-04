@@ -30,7 +30,7 @@ function New-Note{
         return
     }
 
-    $fullTitle = getFullTitle $Category $Section $Title $Date
+    $fullTitle = getFullTitle -Category $Category -Section $Section -Title $Title -Date $Date
 
     # Create the note base folder
     if($AvoidChildFolder){
@@ -82,10 +82,10 @@ function New-Note{
 function getFullTitle{
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory,Position=0)][string] $Category,
-        [Parameter(Mandatory,Position=1)][string] $Section,
-        [Parameter(Mandatory,Position=2)][string] $Title,
-        [Parameter(Position=3)][string] $Date
+        [Parameter(Mandatory)][string] $Category,
+        [Parameter(Mandatory)][string] $Title,
+        [Parameter()][string] $Section,
+        [Parameter()][string] $Date
     )
     
     # Create FullTitle using folder name and title, replacing spaces with underscores

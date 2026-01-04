@@ -136,7 +136,7 @@ function Test_AddNotesToday_Client_Simple{
     Assert-AreEqual -Expected "Clients" -Presented $greatParent
 }
 
-function Test_NewNotesToday_Failing{
+function Test_NewNotes_SUCCESS{
 
     Reset-InvokeCommandMock
 
@@ -147,11 +147,20 @@ function Test_NewNotesToday_Failing{
     $today = (Get-Date).ToString("yyMMdd")
 
     # Act
-    $result = note howto "someting that may be useful" -NoOpen
+    $result = New-Note howto "someting that may be useful" -NoOpen
+
+    $expectedPath = "./TestNotesRoot/howto/howto-someting_that_may_be_useful/howto-someting_that_may_be_useful.md"
+
+    Assert-AreEqualPath -Expected $expectedPath -Presented $result
+
+    # With date
+
+    $result = New-Note howto "someting that may be useful" -NoOpen -Date $today
 
     $expectedPath = "./TestNotesRoot/howto/$today-howto-someting_that_may_be_useful/$today-howto-someting_that_may_be_useful.md"
 
     Assert-AreEqualPath -Expected $expectedPath -Presented $result
+
 }
 
 # ./TestNotesRoot/howto/250720-howto-someting_that_may_be_useful/250720-howto-someting_that_may_be_useful.md ] 
