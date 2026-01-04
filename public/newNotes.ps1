@@ -129,7 +129,8 @@ function getFileContent{
     # Replace placeholders in the template with actual values
     $content = $content -replace '{title}'       , $Title
     $content = $content -replace '{header}'      , $header
-    $content = $content -replace '{date}'        , $Date
+
+    $content = $content -replace '{date}'        , ([string]::IsNullOrWhiteSpace($Date) ? 'NoDate' : "$Date")
     $content = $content -replace '{notes}'       , ([string]::IsNullOrWhiteSpace($Notes)       ? '-' : $Notes)
     $content = $content -replace '{issueurl}'    , ([string]::IsNullOrWhiteSpace($IssueUrl)    ? '<IssueUrl>' : $IssueUrl)
 
