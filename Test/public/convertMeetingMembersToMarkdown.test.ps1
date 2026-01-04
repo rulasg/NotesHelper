@@ -164,7 +164,7 @@ function Test_ConvertMeetingsMembersToMarkdown_Big_sample{
 
     $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $imput
 
-    Assert-AreEqual -Presented $result -Expected @"
+    $expected = @"
 - Alphatech (5)
     - "Grace (AlphaTech) Garcia" <grace.garcia@alphatech.com>
     - "Henry Harris" <henry.harris@alphatech.com>
@@ -175,8 +175,8 @@ function Test_ConvertMeetingsMembersToMarkdown_Big_sample{
     - "Amy Adams (She/Her)" <amy.adams@betasoft.com>
     - "Bob Brown" <bob.brown@betasoft.com>
     - "Charlie Chen" <charlie.chen@betasoft.com>
-    - david.davis@betasoft.com
     - "David Dennis" <david.dennis@betasoft.com>
+    - david.davis@betasoft.com
     - emma.edwards@betasoft.com
     - george.garcia@betasoft.com
     - "Iris Ingram" <iris.ingram@betasoft.com>
@@ -192,4 +192,7 @@ function Test_ConvertMeetingsMembersToMarkdown_Big_sample{
     - "Emma Evans, Eric" <emma.evans@deltalab.com>
     - "Frank Fields, Fiona" <frank.fields@deltalab.com>
 "@
+
+    Assert-AreEqual -Presented $result -Expected $expected
+
 }
