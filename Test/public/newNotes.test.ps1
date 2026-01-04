@@ -1,4 +1,4 @@
-function Test_AddNotesToday_Simple{
+function Test_NewNotes_Simple_DateToday{
 
     Reset-InvokeCommandMock
 
@@ -17,15 +17,40 @@ function Test_AddNotesToday_Simple{
     $categoryPath = New-TestingFolder -Path "./TestNotesRoot/$category" -PassThru
 
     # Add note with folder using -Force
-    $path = New-NoteToday $category $title -NoOpen -Force
+    $path = New-Note $category $title -NoOpen -Force -DateToday
 
     $content = Get-Content -Path $path -Raw
 
     Assert-IsTrue $content.StartsWith($header)
 
-    # File should be in a folder of its own name
+    # File should be in the catergory name
     $parentPath = $path | Split-Path -parent
     Assert-AreEqualPath -Expected $categoryPath -Presented $parentPath
+
+}
+
+function Test_NewNote_Simple_WithDate{
+
+    Reset-InvokeCommandMock
+
+    New-TestingFolder "TestNotesRoot"
+    MockCallToString 'Invoke-NotesHelperNotesRoot' -OutString "./TestNotesRoot"
+
+    $category = "TestClient"
+    $title = "This is the title of the note"
+    $date = "240101"
+
+    $header = "# {category} - {title} ({date})"
+    $header = $header -replace "{category}", $category
+    $header = $header -replace "{title}", $title
+    $header = $header -replace "{date}", $date
+
+    # Add note with date
+    $path = New-Note $category $title -NoOpen -Force -Date $date
+
+    $content = Get-Content -Path $path -Raw
+
+    Assert-IsTrue $content.StartsWith($header)
 
 }
 
@@ -42,6 +67,7 @@ function Test_AddNotesToday_Simple_AddNoteFolder {
     New-TestingFolder -Path "./TestNotesRoot/$category"
 
     # Add folder for the note -AddNoteFolder
+    # $path = New-NoteToday $category $title -NoOpen -AddNoteFolder
     $path = New-NoteToday $category $title -NoOpen -AddNoteFolder
 
     # File should be in a folder of its own name
@@ -139,7 +165,8 @@ function Test_NewNotes_SUCCESS{
     # Act
     $result = New-Note howto "someting that may be useful" -NoOpen
 
-    $expectedPath = "./TestNotesRoot/howto/howto-someting_that_may_be_useful/howto-someting_that_may_be_useful.md"
+    # $expectedPath = "./TestNotesRoot/howto/howto-someting_that_may_be_useful/howto-someting_that_may_be_useful.md"
+    $expectedPath = "./TestNotesRoot/howto/howto-someting_that_may_be_useful.md"
 
     Assert-AreEqualPath -Expected $expectedPath -Presented $result
 
@@ -147,7 +174,7 @@ function Test_NewNotes_SUCCESS{
 
     $result = New-Note howto "someting that may be useful" -NoOpen -Date $today
 
-    $expectedPath = "./TestNotesRoot/howto/$today-howto-someting_that_may_be_useful/$today-howto-someting_that_may_be_useful.md"
+    $expectedPath = "./TestNotesRoot/howto/$today-howto-someting_that_may_be_useful.md"
 
     Assert-AreEqualPath -Expected $expectedPath -Presented $result
 
@@ -167,7 +194,8 @@ function Test_NewNotes_SUCCESS_WithRootPath{
     # Act
     $result = New-Note howto "someting that may be useful" -NoOpen -RootPath $RootFolder
 
-    $expectedPath = "./$RootFolder/howto/howto-someting_that_may_be_useful/howto-someting_that_may_be_useful.md"
+    # $expectedPath = "./$RootFolder/howto/howto-someting_that_may_be_useful/howto-someting_that_may_be_useful.md"
+    $expectedPath = "./$RootFolder/howto/howto-someting_that_may_be_useful.md"
 
     Assert-AreEqualPath -Expected $expectedPath -Presented $result
 
@@ -175,7 +203,7 @@ function Test_NewNotes_SUCCESS_WithRootPath{
 
     $result = New-Note howto "someting that may be useful" -NoOpen -Date $today -RootPath $RootFolder
 
-    $expectedPath = "./$RootFolder/howto/$today-howto-someting_that_may_be_useful/$today-howto-someting_that_may_be_useful.md"
+    $expectedPath = "./$RootFolder/howto/$today-howto-someting_that_may_be_useful.md"
 
     Assert-AreEqualPath -Expected $expectedPath -Presented $result
 
