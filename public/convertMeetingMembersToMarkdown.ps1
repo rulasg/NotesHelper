@@ -2,7 +2,8 @@
 function Convert-NotesMeetingMembersToMarkdown {
     [CmdletBinding()]
     param(
-        [Parameter(Position = 0, ValueFromPipeline)][string]$MeetingMembers
+        [Parameter(Position = 0, ValueFromPipeline)][string]$MeetingMembers,
+        [Parameter()][switch]$SetClipboard
     )
 
     process {
@@ -53,6 +54,11 @@ function Convert-NotesMeetingMembersToMarkdown {
         # Group and format as markdown
         $result = groupMembersByCompany -Members $parsedMembers
 
-        return $result
+        if ($SetClipboard) {
+            $result | Set-Clipboard
+        } else {
+            $result
+        }
+
     }
 } Export-ModuleMember -Function 'Convert-NotesMeetingMembersToMarkdown'
