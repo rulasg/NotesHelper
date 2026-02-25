@@ -38,6 +38,11 @@ function New-Note{
         $Date = Get-Date -Format "yyMMdd"
     }
 
+    if([string]::IsNullOrWhiteSpace($Date)) {
+        Write-Error "Date is empty. Consider using -DateToday or -Date to specify a date for the note."
+        return
+    }
+
     $fileName = getFileName -Category $Category -Section $Section -Title $Title -Date $Date
 
     # Create the note base folder
