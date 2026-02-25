@@ -21,14 +21,17 @@ function Get-Notes () {
     [Alias("notes")]
     param(
         [Parameter()][string] $Filter,
+        [Parameter()][int32] $DaysAgo,
         #all
         [Parameter()][switch] $All
     )
 
+    $DaysAgo = $DaysAgo -eq 0 ? 15 : $DaysAgo
+
     $notes = GetNotes -Filter $filter
 
     # Filter out files that are older than 30 days
-    $ret = $All ? $notes : ($notes | Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-30) })
+    $ret = $All ? $notes : ($notes | Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-$DaysAgo) })
 
     # Create a custom object with required properties
     $ret = $ret | ForEach-Object {
@@ -74,7 +77,8 @@ function GetNotesCategory {
     )
 
     process{
-        (($Path | Split-Path -Leaf) -split '-|\.')[1]
+        $ret = (($Path | Split-Path -Leaf) -split '-|\.')[1]
+        return $ret
     }
 
    
