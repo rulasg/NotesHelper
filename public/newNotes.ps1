@@ -112,7 +112,7 @@ function getFileName{
     }
 
     # Normilize fullTitle by removing special characters and replacing spaces with underscores
-    $fullTitle = $fullTitle -replace '\s+', '_'
+    $fullTitle = $fullTitle -replace '[^\w\-]', ''
 
     return $fullTitle
 }
