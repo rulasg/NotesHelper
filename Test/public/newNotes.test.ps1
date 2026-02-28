@@ -63,13 +63,15 @@ function Test_NewNote_Simple_WithOutDate{
 
     $category = "TestClient"
     $title = "This is the title of the note"
+    $date = (Get-Date).ToString("yyMMdd")
 
-    $header = "# {category} - {title} (NoDate)"
+    $header = "# {category} - {title} ({date})"
     $header = $header -replace "{category}", $category
     $header = $header -replace "{title}", $title
+    $header = $header -replace "{date}", $date
 
-    # Add note with date
-    $path = New-Note $category $title -NoOpen -Force -Date $date
+    # Add note with DateToday
+    $path = New-Note $category $title -NoOpen -Force -DateToday
 
     $content = Get-Content -Path $path -Raw
 
@@ -185,19 +187,18 @@ function Test_NewNotes_SUCCESS{
     New-TestingFolder -Path "./TestNotesRoot/howto"
     $today = (Get-Date).ToString("yyMMdd")
 
-    # Act
-    $result = New-Note howto "someting that may be useful" -NoOpen
+    # Act - With DateToday
+    $result = New-Note howto "someting that may be useful" -NoOpen -DateToday
 
-    # $expectedPath = "./TestNotesRoot/howto/howto-someting_that_may_be_useful/howto-someting_that_may_be_useful.md"
-    $expectedPath = "./TestNotesRoot/howto/howto-someting_that_may_be_useful.md"
+    $expectedPath = "./TestNotesRoot/howto/$today-howto-someting_that_may_be_useful.md"
 
     Assert-AreEqualPath -Expected $expectedPath -Presented $result
 
-    # With date
+    # With explicit date
 
-    $result = New-Note howto "someting that may be useful" -NoOpen -Date $today
+    $result = New-Note howto "someting that may be useful 2" -NoOpen -Date $today
 
-    $expectedPath = "./TestNotesRoot/howto/$today-howto-someting_that_may_be_useful.md"
+    $expectedPath = "./TestNotesRoot/howto/$today-howto-someting_that_may_be_useful_2.md"
 
     Assert-AreEqualPath -Expected $expectedPath -Presented $result
 
@@ -214,19 +215,18 @@ function Test_NewNotes_SUCCESS_WithRootPath{
     New-TestingFolder -Path "./$RootFolder/howto"
     $today = (Get-Date).ToString("yyMMdd")
 
-    # Act
-    $result = New-Note howto "someting that may be useful" -NoOpen -RootPath $RootFolder
+    # Act - With DateToday
+    $result = New-Note howto "someting that may be useful" -NoOpen -RootPath $RootFolder -DateToday
 
-    # $expectedPath = "./$RootFolder/howto/howto-someting_that_may_be_useful/howto-someting_that_may_be_useful.md"
-    $expectedPath = "./$RootFolder/howto/howto-someting_that_may_be_useful.md"
+    $expectedPath = "./$RootFolder/howto/$today-howto-someting_that_may_be_useful.md"
 
     Assert-AreEqualPath -Expected $expectedPath -Presented $result
 
-    # With date
+    # With explicit date
 
-    $result = New-Note howto "someting that may be useful" -NoOpen -Date $today -RootPath $RootFolder
+    $result = New-Note howto "someting that may be useful 2" -NoOpen -Date $today -RootPath $RootFolder
 
-    $expectedPath = "./$RootFolder/howto/$today-howto-someting_that_may_be_useful.md"
+    $expectedPath = "./$RootFolder/howto/$today-howto-someting_that_may_be_useful_2.md"
 
     Assert-AreEqualPath -Expected $expectedPath -Presented $result
 

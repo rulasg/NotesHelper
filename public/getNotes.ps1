@@ -20,7 +20,7 @@ function Get-Notes () {
     [CmdletBinding()]
     [Alias("notes")]
     param(
-        [Parameter()][string] $Filter,
+        [Parameter(Position=0)][string] $Filter,
         [Parameter()][int32] $DaysAgo,
         #all
         [Parameter()][switch] $All
