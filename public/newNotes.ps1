@@ -111,7 +111,8 @@ function getFileName{
         $fullTitle = "{0}-{1}-{2}" -f $Date, $header, $Title
     }
 
-    # Normilize fullTitle by removing special characters and replacing spaces with underscores
+    # Normalize fullTitle by replacing spaces with underscores and removing special characters
+    $fullTitle = $fullTitle -replace ' ', '_'
     $fullTitle = $fullTitle -replace '[^\w\-]', ''
 
     return $fullTitle
