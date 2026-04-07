@@ -20,6 +20,11 @@ function parseMemberEmail {
             $displayName = $matches[1].Trim()
             $email = $matches[2].Trim()
             
+            # Filter out resource/room calendar entries
+            if ($email -match '@resource\.calendar\.google\.com$') {
+                return $null
+            }
+            
             # Extract domain from email
             $domain = ($email -split '@')[1]
             if ($domain) {
@@ -37,11 +42,29 @@ function parseMemberEmail {
                 $company = "Unknown"
             }
 
+            # If display name equals email (Outlook pattern), treat as email-only
+            if ($displayName -ieq $email) {
+                return [PSCustomObject]@{
+                    DisplayName    = $email
+                    Email          = $email
+                    Company        = $company
+                    OriginalFormat = $email
+                }
+            }
+            
+            # Convert ALL CAPS names to Title Case
+            $originalFormat = $memberString
+            $lettersOnly = $displayName -replace '[^a-zA-ZÀ-ÿ]', ''
+            if ($lettersOnly.Length -gt 1 -and $lettersOnly -ceq $lettersOnly.ToUpper()) {
+                $displayName = (Get-Culture).TextInfo.ToTitleCase($displayName.ToLower())
+                $originalFormat = "$displayName <$email>"
+            }
+
             return [PSCustomObject]@{
                 DisplayName    = $displayName
                 Email          = $email
                 Company        = $company
-                OriginalFormat = $memberString
+                OriginalFormat = $originalFormat
             }
         }
         

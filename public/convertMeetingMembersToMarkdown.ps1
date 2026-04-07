@@ -11,34 +11,39 @@ function Convert-NotesMeetingMembersToMarkdown {
             return ""
         }
 
-        # Parse the comma-separated list, handling quoted names with commas
-        # Split on ', ' followed by a quote or a letter (not inside quotes)
-        $members = @()
-        $currentMember = ""
-        $inQuotes = $false
-        
-        for ($i = 0; $i -lt $MeetingMembers.Length; $i++) {
-            $char = $MeetingMembers[$i]
+        # Detect format: semicolons = Outlook/Office 365, commas = Google Calendar
+        if ($MeetingMembers -match ';') {
+            # Outlook/Office 365 format: semicolon-separated
+            $members = $MeetingMembers -split '\s*;\s*' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+        } else {
+            # Google Calendar format: comma-separated with quote handling
+            $members = @()
+            $currentMember = ""
+            $inQuotes = $false
             
-            if ($char -eq '"') {
-                $inQuotes = -not $inQuotes
-                $currentMember += $char
-            }
-            elseif ($char -eq ',' -and -not $inQuotes) {
-                # End of member
-                if (-not [string]::IsNullOrWhiteSpace($currentMember)) {
-                    $members += $currentMember.Trim()
+            for ($i = 0; $i -lt $MeetingMembers.Length; $i++) {
+                $char = $MeetingMembers[$i]
+                
+                if ($char -eq '"') {
+                    $inQuotes = -not $inQuotes
+                    $currentMember += $char
                 }
-                $currentMember = ""
+                elseif ($char -eq ',' -and -not $inQuotes) {
+                    # End of member
+                    if (-not [string]::IsNullOrWhiteSpace($currentMember)) {
+                        $members += $currentMember.Trim()
+                    }
+                    $currentMember = ""
+                }
+                else {
+                    $currentMember += $char
+                }
             }
-            else {
-                $currentMember += $char
+            
+            # Add the last member
+            if (-not [string]::IsNullOrWhiteSpace($currentMember)) {
+                $members += $currentMember.Trim()
             }
-        }
-        
-        # Add the last member
-        if (-not [string]::IsNullOrWhiteSpace($currentMember)) {
-            $members += $currentMember.Trim()
         }
 
         # Parse each member
