@@ -2,7 +2,9 @@ function Get-NoteLink {
     [CmdletBinding()]
     param (
         # Local file path to get the GitHub link for
-        [Parameter(Mandatory,ValueFromPipeline,ValueFromPipelineByPropertyName,Position=0)][Alias("Path")][string] $NotePath
+        [Parameter(Mandatory,ValueFromPipeline,ValueFromPipelineByPropertyName,Position=0)]
+        [Alias("Path","FullName")][string] $NotePath,
+        [Parameter()][switch] $SetClipboard
     )
 
     # Resolve the full path
@@ -53,6 +55,10 @@ function Get-NoteLink {
     # Construct the GitHub URL
     $githubUrl = "$baseUrl/blob/$branch/$relativePath"
 
-    return $githubUrl
+    if ($SetClipboard) {
+        $githubUrl | Set-Clipboard
+    } else {
+        $githubUrl
+    }
 } Export-ModuleMember -Function Get-NoteLink
 

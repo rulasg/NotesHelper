@@ -156,6 +156,83 @@ function Test_ConvertMeetingMembersToMarkdown_MixedEmailFormats {
 }
 
 
+function Test_ConvertMeetingMembersToMarkdown_OutlookFormat {
+
+    # Arrange - Outlook format with ALL CAPS names, email-only entries, and mixed case
+    $input = "ALICE JOHNSON <alice.johnson@alphatech.com>; BOB SMITH <bob.smith@betasoft.com>; charlie@gammatech.com <charlie@gammatech.com>"
+
+    # Act
+    $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $input
+
+    # Assert
+    $expected = @"
+- Alphatech (1)
+    - Alice Johnson <alice.johnson@alphatech.com>
+- Betasoft (1)
+    - Bob Smith <bob.smith@betasoft.com>
+- Gammatech (1)
+    - charlie@gammatech.com
+"@
+    Assert-AreEqual -Expected $expected -Presented $result -Comment "Outlook format should handle ALL CAPS, email-only, and mixed case entries"
+}
+
+function Test_ConvertMeetingMembersToMarkdown_OutlookResourceFiltering {
+
+    # Arrange
+    $input = "ALICE JOHNSON <alice.johnson@alphatech.com>; ES-Ciudad Room 101 <bbva.com_abc123@resource.calendar.google.com>"
+
+    # Act
+    $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $input
+
+    # Assert
+    $expected = @"
+- Alphatech (1)
+    - Alice Johnson <alice.johnson@alphatech.com>
+"@
+    Assert-AreEqual -Expected $expected -Presented $result -Comment "Resource/room entries should be filtered out"
+}
+
+function Test_ConvertMeetingMembersToMarkdown_OutlookMixedCasePreserved {
+
+    # Arrange - Mixed case names should NOT be converted
+    $input = "Vilanova Arnal, Juan <juan.vilanova@accenture.com>; Ricardo Sastre Martín <ricardosa@microsoft.com>"
+
+    # Act
+    $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $input
+
+    # Assert
+    $expected = @"
+- Accenture (1)
+    - Vilanova Arnal, Juan <juan.vilanova@accenture.com>
+- Microsoft (1)
+    - Ricardo Sastre Martín <ricardosa@microsoft.com>
+"@
+    Assert-AreEqual -Expected $expected -Presented $result -Comment "Mixed case names should be preserved as-is"
+}
+
+function Test_ConvertMeetingMembersToMarkdown_OutlookBigSample {
+
+    # Arrange
+    $input = "JUAN CARLOS OSORIO BARJOLA <juancarlos.osorio@bbva.com>; juan.a.mora@bbva.com <juan.a.mora@bbva.com>; rulasg@github.com <rulasg@github.com>; Vilanova Arnal, Juan <juan.vilanova@accenture.com>; ES-Room <room@resource.calendar.google.com>; dmangas@microsoft.com <dmangas@microsoft.com>"
+
+    # Act
+    $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $input
+
+    # Assert
+    $expected = @"
+- Accenture (1)
+    - Vilanova Arnal, Juan <juan.vilanova@accenture.com>
+- Bbva (2)
+    - Juan Carlos Osorio Barjola <juancarlos.osorio@bbva.com>
+    - juan.a.mora@bbva.com
+- Github (1)
+    - rulasg@github.com
+- Microsoft (1)
+    - dmangas@microsoft.com
+"@
+    Assert-AreEqual -Expected $expected -Presented $result -Comment "Outlook format with mixed entry types should work correctly"
+}
+
 function Test_ConvertMeetingsMembersToMarkdown_Big_sample{
 
     $imput = @"
