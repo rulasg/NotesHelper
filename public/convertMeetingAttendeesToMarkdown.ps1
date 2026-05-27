@@ -2,7 +2,7 @@
 function Convert-NotesMeetingAttendeesToMarkdown {
     [CmdletBinding()]
     param(
-        [Parameter(Position = 0, ValueFromPipeline)][string]$MeetingAttendees,
+        [Parameter(Mandatory,Position = 0, ValueFromPipeline)][string]$MeetingAttendees,
         [Parameter()][switch]$SetClipboard
     )
 
