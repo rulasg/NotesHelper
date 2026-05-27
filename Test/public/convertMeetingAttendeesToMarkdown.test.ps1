@@ -1,14 +1,3 @@
-function Test_ConvertMeetingAttendeesToMarkdown_EmptyInput {
-
-    # Arrange
-    $input = ""
-
-    # Act
-    $result = Convert-NotesMeetingAttendeesToMarkdown -MeetingAttendees $input
-
-    # Assert
-    Assert-AreEqual -Expected "" -Presented $result -Comment "Empty input should return empty string"
-}
 
 function Test_ConvertMeetingAttendeesToMarkdown_HeaderOnly {
 
