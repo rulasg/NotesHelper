@@ -248,7 +248,7 @@ function Test_ConvertMeetingsMembersToMarkdown_Big_sample{
     - "Kevin Kim" <kevin.kim@alphatech.com>
     - "Laura Lewis" <laura.lewis@alphatech.com>
     - "Mark Martinez" <mark.martinez@alphatech.com>
-- Betasoft (13)
+- Betasoft (14)
     - "Amy Adams (She/Her)" <amy.adams@betasoft.com>
     - "Bob Brown" <bob.brown@betasoft.com>
     - "Charlie Chen" <charlie.chen@betasoft.com>
@@ -256,14 +256,13 @@ function Test_ConvertMeetingsMembersToMarkdown_Big_sample{
     - david.davis@betasoft.com
     - emma.edwards@betasoft.com
     - george.garcia@betasoft.com
+    - george.garcia@bookings.betasoft.com
     - "Iris Ingram" <iris.ingram@betasoft.com>
     - "Jack Johnson" <jack.johnson@betasoft.com>
     - "James Jackson" <james.jackson@betasoft.com>
     - "Jennifer Jones" <jennifer.jones@betasoft.com>
     - "Kyle Knight" <kyle.knight@betasoft.com>
     - lisa.lee@betasoft.com
-- Bookings (1)
-    - george.garcia@bookings.betasoft.com
 - Deltalab (3)
     - "Alice Anderson" <alice.anderson@deltalab.com>
     - "Emma Evans, Eric" <emma.evans@deltalab.com>
@@ -272,4 +271,21 @@ function Test_ConvertMeetingsMembersToMarkdown_Big_sample{
 
     Assert-AreEqual -Presented $result -Expected $expected
 
+}
+
+function Test_ConvertMeetingMembersToMarkdown_SubdomainEmailGroupsByRegisteredDomain {
+
+    # Arrange
+    $input = "Alice Johnson <alice.johnson@emea.contoso.com>, Bob Smith <bob.smith@contoso.com>"
+
+    # Act
+    $result = Convert-NotesMeetingMembersToMarkdown -MeetingMembers $input
+
+    # Assert
+    $expected = @"
+- Contoso (2)
+    - Alice Johnson <alice.johnson@emea.contoso.com>
+    - Bob Smith <bob.smith@contoso.com>
+"@
+    Assert-AreEqual -Expected $expected -Presented $result -Comment "Subdomain like emea.contoso.com should group under the registered domain (contoso), not the subdomain"
 }
