@@ -36,7 +36,7 @@ function Get-Notes () {
     # Create a custom object with required properties
     $ret = $ret | ForEach-Object {
         [PSCustomObject]@{
-            Name = $_ | Split-Path -Leaf
+            Name = $_ | Split-Path -LeafBase
             Category = $_ | GetNotesCategory
             FullName = $_.FullName
         }
@@ -53,6 +53,26 @@ function Get-Notes () {
     return $ret
 
 } Export-ModuleMember -Function Get-Notes -Alias "notes"
+
+function Open-Note{
+    [CmdLetBinding()]
+    param(
+        [Parameter(Position=0)][string] $Filter,
+        [Parameter()][int32] $DaysAgo
+    )
+
+    $notes = Get-Notes -Filter $filter -DaysAgo $DaysAgo -All
+
+    if ($notes.Count -eq 1) {
+        "Opening note: $($notes.Name)" | Write-MyHost
+
+        open $notes.FullName
+
+    } else{
+        "Found $($notes.Count) notes" | Write-MyHost
+        return $notes
+    }
+} Export-ModuleMember -Function Open-Note
 
 function GetNotes () {
     [CmdletBinding()]
