@@ -1,6 +1,7 @@
 
 function Convert-NotesMeetingAttendeesToMarkdown {
     [CmdletBinding()]
+    [Alias("cnma")]
     param(
         [Parameter(Mandatory,Position = 0, ValueFromPipeline)][string]$MeetingAttendees,
         [Parameter()][switch]$SetClipboard
@@ -56,4 +57,4 @@ function Convert-NotesMeetingAttendeesToMarkdown {
             $result
         }
     }
-} Export-ModuleMember -Function 'Convert-NotesMeetingAttendeesToMarkdown'
+} Export-ModuleMember -Function 'Convert-NotesMeetingAttendeesToMarkdown' -Alias 'cnma'

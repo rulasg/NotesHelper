@@ -1,6 +1,7 @@
 
 function Convert-NotesMeetingMembersToMarkdown {
     [CmdletBinding()]
+    [alias("cnmm")]
     param(
         [Parameter(Position = 0, ValueFromPipeline)][string]$MeetingMembers,
         [Parameter()][switch]$SetClipboard
@@ -66,4 +67,4 @@ function Convert-NotesMeetingMembersToMarkdown {
         }
 
     }
-} Export-ModuleMember -Function 'Convert-NotesMeetingMembersToMarkdown'
+} Export-ModuleMember -Function 'Convert-NotesMeetingMembersToMarkdown' -Alias 'cnmm'
