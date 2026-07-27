@@ -30,7 +30,7 @@ function Get-Notes () {
 
     $notes = GetNotes -Filter $filter
 
-    # Filter out files that are older than 30 days
+    # Filter out files that are older than $DaysAgo unless $All is set
     $ret = $All ? $notes : ($notes | Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-$DaysAgo) })
 
     # Create a custom object with required properties
@@ -73,6 +73,28 @@ function Open-Note{
         return $notes
     }
 } Export-ModuleMember -Function Open-Note
+
+function Read-Note {
+    [CmdLetBinding()]
+    param(
+        [Parameter(Position=0)][string] $Filter,
+        [Parameter()][int32] $DaysAgo
+    )
+
+    $notes = Get-Notes -Filter $filter -DaysAgo $DaysAgo
+
+    if ($notes.Count -eq 1) {
+        "Reading note: $($notes.Name)" | Write-MyHost
+
+        $content = Get-Content -Path $notes.FullName
+
+        return $content
+
+    } else{
+        "Found $($notes.Count) notes" | Write-MyHost
+        return $notes
+    }
+} Export-ModuleMember -Function Read-Note
 
 function GetNotes () {
     [CmdletBinding()]
