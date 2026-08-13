@@ -63,7 +63,7 @@ function New-FolderIfNotExists{
         }
         else {
             # Fail gracefully if folder doesn't exist and Force is not specified
-            Write-Error  "Folder does not exist: $Path"
+            # Write-Error  "Folder does not exist: $Path"
             return $null
         }
     }

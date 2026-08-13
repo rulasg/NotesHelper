@@ -1,3 +1,6 @@
+Register-ArgumentCompleter -CommandName New-Note -ParameterName "Category" -ScriptBlock { param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters) Get-ParamValuesCategory @PsBoundParameters }
+
+Register-ArgumentCompleter -CommandName New-Note -ParameterName "Section" -ScriptBlock { param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters) Get-ParamValuesSection @PsBoundParameters }
 
 function New-Note{
     # Add Force parameter to support creation of client folder if it doesn't exist
@@ -16,7 +19,6 @@ function New-Note{
         [Parameter()][switch] $Force,
         [Parameter()][string] $RootPath,
         [Parameter()][switch] $DateToday
-
     )
 
     # FILENAME
