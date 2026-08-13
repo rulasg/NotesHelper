@@ -61,7 +61,7 @@ function Open-Note{
         [Parameter()][int32] $DaysAgo
     )
 
-    $notes = Get-Notes -Filter $filter -DaysAgo $DaysAgo -All
+    $notes = Get-Notes -Filter $filter -DaysAgo $DaysAgo
 
     if ($notes.Count -eq 1) {
         "Opening note: $($notes.Name)" | Write-MyHost
