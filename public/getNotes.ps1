@@ -78,17 +78,25 @@ function Read-Note {
     [CmdLetBinding()]
     param(
         [Parameter(Position=0)][string] $Filter,
-        [Parameter()][int32] $DaysAgo
+        [Parameter()][int32] $DaysAgo,
+        [Parameter()][switch] $All,
+        [Parameter()][Alias("E")][switch] $OpenInEditor
     )
 
-    $notes = Get-Notes -Filter $filter -DaysAgo $DaysAgo
+    $notes = Get-Notes -Filter $filter -DaysAgo $DaysAgo -All:$All
 
     if ($notes.Count -eq 1) {
-        "Reading note: $($notes.Name)" | Write-MyHost
+        "$($notes.FullName)" | Write-MyHost
+        
+        if ($OpenInEditor) {
+            $ret = Invoke-Item -Path $notes.FullName
+            
+        } else {
+            "$($notes.Name)" | Write-MyHost
+            $ret = Get-Content -Path $notes.FullName
+        }
 
-        $content = Get-Content -Path $notes.FullName
-
-        return $content
+        return $ret
 
     } else{
         "Found $($notes.Count) notes" | Write-MyHost
