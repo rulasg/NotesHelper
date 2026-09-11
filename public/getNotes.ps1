@@ -23,7 +23,9 @@ function Get-Notes () {
         [Parameter(Position=0)][string] $Filter,
         [Parameter()][int32] $DaysAgo,
         #all
-        [Parameter()][switch] $All
+        [Parameter()][switch] $All,
+        [Parameter()][switch] $Open,
+        [Parameter()][switch] $Read
     )
 
     $DaysAgo = $DaysAgo -eq 0 ? 15 : $DaysAgo
@@ -31,7 +33,7 @@ function Get-Notes () {
     $notes = GetNotes -Filter $filter
 
     # Filter out files that are older than $DaysAgo unless $All is set
-    $ret = $All ? $notes : ($notes | Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-$DaysAgo) })
+    $ret = $All ? $notes : ($notes | WhereNoteDateNewerThan -Days $DaysAgo )
 
     # Create a custom object with required properties
     $ret = $ret | ForEach-Object {
@@ -50,59 +52,19 @@ function Get-Notes () {
         Write-Host "No notes found in the last 30 days. Use -All to see all notes." -ForegroundColor Yellow
     }
 
-    return $ret
+
+    if ($Open) {
+        $ret | ForEach-Object { Invoke-Item -Path $_.FullName }
+    } 
+    
+    if($Read) {
+        $ret | foreach-object { Get-Content -Path $_.FullName }
+    } else {
+        return $ret
+    }
+
 
 } Export-ModuleMember -Function Get-Notes -Alias "notes"
-
-function Open-Note{
-    [CmdLetBinding()]
-    param(
-        [Parameter(Position=0)][string] $Filter,
-        [Parameter()][int32] $DaysAgo
-    )
-
-    $notes = Get-Notes -Filter $filter -DaysAgo $DaysAgo
-
-    if ($notes.Count -eq 1) {
-        "Opening note: $($notes.Name)" | Write-MyHost
-
-        open $notes.FullName
-
-    } else{
-        "Found $($notes.Count) notes" | Write-MyHost
-        return $notes
-    }
-} Export-ModuleMember -Function Open-Note
-
-function Read-Note {
-    [CmdLetBinding()]
-    param(
-        [Parameter(Position=0)][string] $Filter,
-        [Parameter()][int32] $DaysAgo,
-        [Parameter()][switch] $All,
-        [Parameter()][Alias("E")][switch] $OpenInEditor
-    )
-
-    $notes = Get-Notes -Filter $filter -DaysAgo $DaysAgo -All:$All
-
-    if ($notes.Count -eq 1) {
-        "$($notes.FullName)" | Write-MyHost
-        
-        if ($OpenInEditor) {
-            $ret = Invoke-Item -Path $notes.FullName
-            
-        } else {
-            "$($notes.Name)" | Write-MyHost
-            $ret = Get-Content -Path $notes.FullName
-        }
-
-        return $ret
-
-    } else{
-        "Found $($notes.Count) notes" | Write-MyHost
-        return $notes
-    }
-} Export-ModuleMember -Function Read-Note
 
 function GetNotes () {
     [CmdletBinding()]
@@ -133,4 +95,48 @@ function GetNotesCategory {
 
    
 
+}
+
+function WhereNoteDateNewerThan{
+    param(
+        [Parameter(Mandatory)][int32] $Days,
+        [Parameter(Mandatory, ValueFromPipeline)][System.IO.FileInfo] $File
+    )
+
+    process{
+
+        # $ret = $All ? $notes : ($notes | Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-$DaysAgo) })
+        $datelimit = (Get-Date).AddDays(-$days)
+        $fileDate = GetNoteDate($File)
+        
+        if ($fileDate -gt $datelimit) {
+            return $File
+        }
+    }
+}
+
+function GetNoteDate{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory,ValueFromPipeline)][System.IO.FileInfo] $File
+    )
+    # read from the file name the date of the note.
+    # return a DateTime object representing the date of the note.
+    # The file date is encoded at the begining of the file name on a format YYMMDD
+
+    process{
+
+        $baseName = $File.Name
+        
+        if ($baseName -notmatch '^(?<year>\d{2})(?<month>\d{2})(?<day>\d{2})') {
+            # if file has no date use fiel metafata
+            $ret = $File.LastWriteTime
+        } else {
+            $year = [int]("20$($Matches.year)")
+            $month = [int]$Matches.month
+            $day = [int]$Matches.day
+            $ret = [datetime]::new($year, $month, $day)
+        }
+        return $ret
+    }
 }
