@@ -34,9 +34,41 @@ function Get-NotesSections{
 
 } Export-ModuleMember -Function Get-NotesSections
 
+function Get-NotesTitle{
+    [CmdletBinding()]
+    param(
+        [Parameter()][string] $Category,
+        [Parameter()][string] $Section
+    )
+
+    $path = Get-NoteFolder -Category $Category -Section $Section
+
+    if(-not $path){
+        "No category path found for category '$Category' and section '$Section'" | Write-MyError
+        return
+    }
+
+    $files = getNoteFiles $path
+
+     $ret = $files.Name
+
+     return $ret
+
+} Export-ModuleMember -Function Get-NotesTitle
+
 
 function getSubfolders($path){
     $subfolders = Get-ChildItem -Path $path -Directory
 
     return $subfolders
+}
+
+function getNoteFiles($path){
+    $files = Get-ChildItem -Path $path -File |
+        Where-Object {
+            $_.Name -match '^(?<date>\d{6})' -and
+            $_.Extension -match '\.(md|markdown)$'
+        }
+
+    return $files
 }

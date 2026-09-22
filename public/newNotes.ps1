@@ -1,7 +1,5 @@
 Register-ArgumentCompleter -CommandName New-Note -ParameterName "Category" -ScriptBlock { param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters) Get-ParamValuesCategory @PsBoundParameters }
-
 Register-ArgumentCompleter -CommandName New-Note -ParameterName "Section" -ScriptBlock { param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters) Get-ParamValuesSection @PsBoundParameters }
-
 function New-Note{
     # Add Force parameter to support creation of client folder if it doesn't exist
     [CmdletBinding()]
@@ -145,6 +143,8 @@ function getFileContent{
     return $content
 }
 
+Register-ArgumentCompleter -CommandName New-NoteToday -ParameterName "Category" -ScriptBlock { param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters) Get-ParamValuesCategory @PsBoundParameters }
+Register-ArgumentCompleter -CommandName New-NoteToday -ParameterName "Section" -ScriptBlock { param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters) Get-ParamValuesSection @PsBoundParameters }
 function New-NoteToday{
     # Add Force parameter to support creation of client folder if it doesn't exist
     [CmdletBinding()]
@@ -183,6 +183,9 @@ function New-NoteToday{
 
 } Export-ModuleMember -Function New-NoteToday -Alias "note"
 
+Register-ArgumentCompleter -CommandName New-NoteTodayClient -ParameterName "Name" -ScriptBlock { param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters) Get-ParamValuesSection -category "clients" @PsBoundParameters }
+Register-ArgumentCompleter -CommandName New-NoteTodayClient -ParameterName "Title" -ScriptBlock { param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters) Get-ParamValuesTitle -category "clients" @PsBoundParameters }
+
 function New-NoteTodayClient{
     [CmdletBinding()]
     [alias("cnote")]
@@ -218,6 +221,8 @@ function New-NoteTodayClient{
 
 } Export-ModuleMember -Function New-NoteTodayClient -Alias cnote
 
+Register-ArgumentCompleter -CommandName New-NoteTodayMeeting -ParameterName "Name" -ScriptBlock { param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters) Get-ParamValuesSection -category "meetings" @PsBoundParameters }
+Register-ArgumentCompleter -CommandName New-NoteTodayMeeting -ParameterName "Title" -ScriptBlock { param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters) Get-ParamValuesTitle -category "meetings" @PsBoundParameters }
 function New-NoteTodayMeeting{
     [CmdletBinding()]
     [alias("mnote")]
@@ -225,6 +230,7 @@ function New-NoteTodayMeeting{
         [Parameter(Mandatory,Position = 0)][string] $Name,
         [Parameter(Mandatory,Position = 1)][string] $Title,
         [Parameter(Position = 2)][string] $Notes,
+        [Parameter()][Alias("T")][ValidateSet("none","meetingmini")][string]$Template = "none",
         [Parameter()][string] $IssueUrl,
         [Parameter()][switch] $NoOpen,
         [Parameter()][switch] $Force,
@@ -238,7 +244,7 @@ function New-NoteTodayMeeting{
         Date          = ""
         Notes         = $Notes
         IssueUrl      = $IssueUrl
-        Template      = "meetingmini"
+        Template      = $Template
         NoOpen        = $NoOpen
         Force         = $Force
         RootPath      = $RootPath
@@ -252,6 +258,8 @@ function New-NoteTodayMeeting{
 
 } Export-ModuleMember -Function New-NoteTodayMeeting -Alias mnote
 
+Register-ArgumentCompleter -CommandName New-NoteMeetingNext -ParameterName "Name" -ScriptBlock { param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters) Get-ParamValuesSection -category "meetings" @PsBoundParameters }
+Register-ArgumentCompleter -CommandName New-NoteMeetingNext -ParameterName "Title" -ScriptBlock { param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters) Get-ParamValuesTitle -category "meetings" @PsBoundParameters }
 function New-NoteMeetingNext{
     [CmdletBinding()]
     [alias("mnoten")]
@@ -285,6 +293,8 @@ function New-NoteMeetingNext{
 
 } Export-ModuleMember -Function New-NoteMeetingNext -Alias mnoten
 
+Register-ArgumentCompleter -CommandName New-NoteQuestion -ParameterName "Name" -ScriptBlock { param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters) Get-ParamValuesSection -category "questions" @PsBoundParameters }
+Register-ArgumentCompleter -CommandName New-NoteQuestion -ParameterName "Title" -ScriptBlock { param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters) Get-ParamValuesTitle -category "questions" @PsBoundParameters }
 function New-NoteQuestion{
     [CmdletBinding()]
     [alias("qnote")]
@@ -299,7 +309,7 @@ function New-NoteQuestion{
     )
 
     $params = @{
-        Category      = "meetings"
+        Category      = "questions"
         Section       = $Name
         Title         = [string]::IsNullOrWhiteSpace($Title) ? "Question" : "Question - $Title"
         Date          = ""
@@ -319,13 +329,13 @@ function New-NoteQuestion{
 
 } Export-ModuleMember -Function New-NoteQuestion -Alias qnote
 
+Register-ArgumentCompleter -CommandName New-NoteTemp -ParameterName "Title" -ScriptBlock { param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters) Get-ParamValuesTitle -category "temp" -section "tempnote" @PsBoundParameters }
 function New-NoteTemp{
     [CmdletBinding()]
     [alias("tnote")]
     param(
-        [Parameter(Position = 0)][string] $Name,
-        [Parameter(Position = 1)][string] $Title,
-        [Parameter(Position = 2)][string] $Notes,
+        [Parameter(Position = 0)][string] $Title,
+        [Parameter(Position = 1)][string] $Notes,
         [Parameter(ValueFromPipeline)][string] $IssueUrl,
         [Parameter()][switch] $NoOpen,
         [Parameter()][switch] $Force,
@@ -334,7 +344,7 @@ function New-NoteTemp{
 
     $params = @{
         Category      = "temp"
-        Section       = $Name
+        Section       = "tempnote"
         Title         = [string]::IsNullOrWhiteSpace($Title) ? "Notes" : "$Title"
         Date          = ""
         Notes         = $Notes

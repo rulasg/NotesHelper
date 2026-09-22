@@ -25,7 +25,8 @@ function Get-Notes () {
         #all
         [Parameter()][switch] $All,
         [Parameter()][switch] $Open,
-        [Parameter()][switch] $Read
+        [Parameter()][switch] $Read,
+        [Parameter()][switch] $LinkCopy
     )
 
     $DaysAgo = $DaysAgo -eq 0 ? 15 : $DaysAgo
@@ -59,9 +60,19 @@ function Get-Notes () {
     
     if($Read) {
         $ret | foreach-object { Get-Content -Path $_.FullName }
-    } else {
-        return $ret
+
+        return
     }
+
+    if($LinkCopy){
+        $links = $ret | ForEach-Object { Get-NoteLink -NotePath $_.FullName }
+        $links | Set-Clipboard
+        "Links copied to clipboard" | Write-MyHost
+
+        return
+    } 
+
+    return $ret
 
 
 } Export-ModuleMember -Function Get-Notes -Alias "notes"

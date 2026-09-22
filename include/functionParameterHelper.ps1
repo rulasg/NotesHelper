@@ -104,19 +104,39 @@ function getParameterValue {
     param(
         [System.Management.Automation.Language.CommandAst]$commandAst,
         [string]$ParameterName,
-        [string]$ParameterAlias
+        [string]$ParameterAlias,
+        [string]$ParameterPosition = "-1"
     )
 
     $CommandText = $commandAst.Extent.Text
     
     # Match parameter followed by either quoted string or unquoted word
     if ($CommandText -match "-$ParameterName\s+(?:(?:`"([^`"]*)`")|(?:'([^']*)')|([^\s-]+))") {
-        return $matches[1], $matches[2], $matches[3] | Where-Object { $_ }
+        $ret =  $matches[1], $matches[2], $matches[3] | Where-Object { $_ }
+        "Found parameter '$ParameterName' with value '$ret'" | Write-Mydebug -Section "ArgumentCompleter"
+        return $ret
     }
     
     # If ParameterName not found, try ParameterAlias
     if ($ParameterAlias -and $CommandText -match "-$ParameterAlias\s+(?:(?:`"([^`"]*)`")|(?:'([^']*)')|([^\s-]+))") {
-        return $matches[1], $matches[2], $matches[3] | Where-Object { $_ }
+        $ret = $matches[1], $matches[2], $matches[3] | Where-Object { $_ }
+        "Found parameter '$ParameterAlias' with value '$ret'" | Write-Mydebug -Section "ArgumentCompleter"
+        return $ret
+    }
+
+    # If ParameterName and ParameterAlias not found, try positional parameter
+    if($ParameterPosition -ne "-1"){
+        $Position = [int]$ParameterPosition
+        $s = ($CommandText -split '\s+')
+        
+        # Remove the command name
+        $s = @($s | Select-Object -Skip 1)
+
+        if($s.Length -gt $Position){
+            $ret = $s[$Position]
+            "Found positional parameter at position $Position with value '$ret'" | Write-Mydebug
+            return $ret
+        }
     }
     
     return $null
